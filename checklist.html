@@ -1,1 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOV Checklist | GK 2026 Portal</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Updated FontAwesome Link -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
 
+    <!-- SIDEBAR NAVIGATION -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h2><i class="fas fa-shield-alt"></i> GK Portal</h2>
+            <p>PDRRMO Tarlac</p>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+            <li class="active"><a href="checklist.html"><i class="fas fa-folder-open"></i> MOV Checklist</a></li>
+            <li><a href="#"><i class="fas fa-tasks"></i> OPR Request Tracker</a></li>
+            <li><a href="#"><i class="fas fa-file-export"></i> Sheets & Reports</a></li>
+            <li><a href="#"><i class="fas fa-cog"></i> Admin Settings</a></li>
+        </ul>
+    </nav>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="main-content">
+        <header class="top-header">
+            <div class="page-title">
+                <h1>Means of Verification (MOV) Tracker</h1>
+                <p>Manage, upload, and track document statuses for 2026.</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn-primary"><i class="fas fa-plus"></i> Add New Record</button>
+            </div>
+        </header>
+
+        <!-- FILTER BAR -->
+        <div class="filter-bar panel">
+            <div class="filter-group">
+                <label>Filter by Pillar:</label>
+                <select id="pillarFilter">
+                    <option value="all">All Pillars</option>
+                    <option value="structure">I. Structure</option>
+                    <option value="competency">II. Competency</option>
+                    <option value="management">III. Management Systems</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Filter by OPR:</label>
+                <select id="oprFilter">
+                    <option value="all">All OPRs</option>
+                    <option value="pdrrmo">PDRRMO (Internal)</option>
+                    <option value="pswdo">PSWDO</option>
+                    <option value="phrmo">PHRMO</option>
+                    <option value="pgso">PGSO</option>
+                </select>
+            </div>
+            <div class="filter-group search-box">
+                <input type="text" placeholder="Search criteria or document name...">
+                <i class="fas fa-search"></i>
+            </div>
+        </div>
+
+        <!-- THE MAIN DATA TABLE -->
+        <div class="panel table-container">
+            <table class="data-table checklist-table">
+                <thead>
+                    <tr>
+                        <th>Crit.</th>
+                        <th>Required Document</th>
+                        <th>OPR</th>
+                        <th>Data Status</th>
+                        <th>File / Link</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Example Row 1: Complete -->
+                    <tr>
+                        <td><strong>1.1</strong></td>
+                        <td>Executive Order No. 34 (PDRRMC Composition)</td>
+                        <td><span class="badge badge-internal">PDRRMO</span></td>
+                        <td><span class="status-tag status-ok">OK / Scanned</span></td>
+                        <td><a href="#" class="file-link"><i class="fas fa-file-pdf"></i> EO-34.pdf</a></td>
+                        <td><button class="btn-icon"><i class="fas fa-edit"></i></button></td>
+                    </tr>
+                    
+                    <!-- Example Row 2: Pending External -->
+                    <tr>
+                        <td><strong>1.6</strong></td>
+                        <td>PDRRMO Personnel Plantilla (Jan-June 2026)</td>
+                        <td><span class="badge badge-external">PHRMO</span></td>
+                        <td><span class="status-tag status-pending">Requested</span></td>
+                        <td><span class="text-muted">Awaiting File...</span></td>
+                        <td><button class="btn-icon"><i class="fas fa-edit"></i></button></td>
+                    </tr>
+
+                    <!-- Example Row 3: Hardcopy Only -->
+                    <tr>
+                        <td><strong>2.1</strong></td>
+                        <td>Tarlac Ecological Profile with Risk Profile</td>
+                        <td><span class="badge badge-internal">PDRRMO</span></td>
+                        <td><span class="status-tag status-hardcopy">Hardcopy On Hand</span></td>
+                        <td><span class="text-muted">Physical File Location: Cabinet A</span></td>
+                        <td><button class="btn-icon"><i class="fas fa-edit"></i></button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+</body>
+</html>
