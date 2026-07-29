@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GK 2026 Assessment Portal | Tarlac</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- SIDEBAR NAVIGATION -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h2><i class="fas fa-shield-alt"></i> GK Portal</h2>
+            <p>PDRRMO Tarlac</p>
+        </div>
+        <ul class="nav-links">
+            <li class="active"><a href="#"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+            <li><a href="#"><i class="fas fa-folder-open"></i> MOV Checklist</a></li>
+            <li><a href="#"><i class="fas fa-tasks"></i> OPR Request Tracker</a></li>
+            <li><a href="#"><i class="fas fa-file-export"></i> Sheets & Reports</a></li>
+            <li><a href="#"><i class="fas fa-cog"></i> Admin Settings</a></li>
+        </ul>
+    </nav>
+
+    <!-- MAIN DASHBOARD CONTENT -->
+    <main class="main-content">
+        <!-- HEADER & ALERTS -->
+        <header class="top-header">
+            <div class="page-title">
+                <h1>Overview Dashboard</h1>
+                <p>Assessment Year: 2026 | LGU Data Status: Encoding</p>
+            </div>
+            <div class="user-profile">
+                <span><i class="fas fa-user-circle"></i> Lead Admin (Internal)</span>
+            </div>
+        </header>
+
+        <!-- SYSTEM ALERT (Mid-Year Notification) -->
+        <div class="system-alert" id="midYearAlert">
+            <i class="fas fa-exclamation-triangle"></i>
+            <strong>Mid-Year Reminder:</strong> It is time to request the 2026 MOVs from internal OPRs (PSWDO, PHRMO, etc.) for next year's GK assessment.
+            <button onclick="dismissAlert()">Dismiss</button>
+        </div>
+
+        <!-- KPI SUMMARY CARDS -->
+        <section class="kpi-grid">
+            <div class="kpi-card">
+                <h3>Overall Completion</h3>
+                <h2 class="text-blue">45%</h2>
+                <p>12/26 Criteria Uploaded</p>
+            </div>
+            <div class="kpi-card">
+                <h3>Est. Assessment Score</h3>
+                <h2 class="text-gold">2.61</h2>
+                <p>Gold Recognition (Projected)</p>
+            </div>
+            <div class="kpi-card">
+                <h3>Pending OPR Requests</h3>
+                <h2 class="text-red">8</h2>
+                <p>Emails waiting to be sent</p>
+            </div>
+            <div class="kpi-card">
+                <h3>Items Under Review</h3>
+                <h2 class="text-orange">3</h2>
+                <p>Awaiting Admin Approval</p>
+            </div>
+        </section>
+
+        <!-- PILLAR STATUS & ACTION ITEMS -->
+        <section class="bottom-grid">
+            
+            <!-- Pillar Colors representing your Excel Dashboard -->
+            <div class="panel pillar-status">
+                <h3>Pillar Progress Overview</h3>
+                <div class="progress-item"><span class="label">I. Structure</span><div class="bar-bg"><div class="bar bar-green" style="width: 90%;"></div></div></div>
+                <div class="progress-item"><span class="label">II. Competency</span><div class="bar-bg"><div class="bar bar-blue" style="width: 60%;"></div></div></div>
+                <div class="progress-item"><span class="label">III. Management</span><div class="bar-bg"><div class="bar bar-orange" style="width: 40%;"></div></div></div>
+                <div class="progress-item"><span class="label">IV. Policies</span><div class="bar-bg"><div class="bar bar-purple" style="width: 80%;"></div></div></div>
+                <div class="progress-item"><span class="label">V. Knowledge Mgt</span><div class="bar-bg"><div class="bar bar-pink" style="width: 50%;"></div></div></div>
+                <div class="progress-item"><span class="label">VI. Partnership</span><div class="bar-bg"><div class="bar bar-teal" style="width: 100%;"></div></div></div>
+            </div>
+
+            <div class="panel pending-tasks">
+                <h3>Priority OPR Requests Needed</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Criterion</th>
+                            <th>Required Document</th>
+                            <th>OPR Target</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2.8</td>
+                            <td>Inventory of Stockpiled Goods</td>
+                            <td><strong>PSWDO</strong></td>
+                            <td><button class="btn-action">Track Email</button></td>
+                        </tr>
+                        <tr>
+                            <td>1.6</td>
+                            <td>Plantilla / Appointments</td>
+                            <td><strong>PHRMO</strong></td>
+                            <td><button class="btn-action">Track Email</button></td>
+                        </tr>
+                        <tr>
+                            <td>1.8</td>
+                            <td>2026 GSIS Insurance Policy</td>
+                            <td><strong>PGSO</strong></td>
+                            <td><button class="btn-action">Track Email</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </section>
+    </main>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
