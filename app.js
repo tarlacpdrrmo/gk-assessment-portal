@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-import { getFirestore, collection, addDoc, doc, deleteDoc, updateDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, doc, deleteDoc, updateDoc, onSnapshot, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDSCB9jQIzyn9WxGZ58sLkYJPHCj5oeEKQ",
@@ -154,8 +154,8 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-   // ==========================================
-    // MODULE 3: OPR TRACKER LOGIC (With Email Automation)
+    // ==========================================
+    // MODULE 3: OPR TRACKER LOGIC
     // ==========================================
     const trackerTableBody = document.getElementById("trackerTableBody");
 
@@ -204,15 +204,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 trackerTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #27ae60; padding: 20px;"><strong><i class="fas fa-check-circle"></i> All caught up! No pending requests.</strong></td></tr>';
             }
 
-            // --- NEW AUTOMATED EMAIL LOGIC ---
             document.querySelectorAll(".btn-email").forEach(btn => {
                 btn.addEventListener("click", (e) => {
-                    // Pull the specific data embedded in the button
                     const targetOPR = e.currentTarget.getAttribute("data-opr");
                     const targetCrit = e.currentTarget.getAttribute("data-crit");
                     const targetDoc = e.currentTarget.getAttribute("data-doc");
 
-                    // Format the Subject and Body of the email
                     const subject = encodeURIComponent(`URGENT: Gawad KALASAG 2026 Requirement - ${targetCrit}`);
                     const body = encodeURIComponent(
                         `Good day ${targetOPR} Team,\n\n` +
@@ -225,10 +222,80 @@ document.addEventListener("DOMContentLoaded", () => {
                         `PDRRMO Tarlac`
                     );
 
-                    // Trigger the email client to open
                     window.location.href = `mailto:?subject=${subject}&body=${body}`;
                 });
             });
+        });
+    }
+
+    // ==========================================
+    // MODULE 4: SHEETS & REPORTS LOGIC
+    // ==========================================
+    const exportCsvBtn = document.getElementById("exportCsvBtn");
+
+    if (exportCsvBtn) {
+        exportCsvBtn.addEventListener("click", async () => {
+            try {
+                // Temporarily change button text so the user knows it's working
+                exportCsvBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating Export...';
+                exportCsvBtn.disabled = true;
+
+                // 1. Fetch all records from Firebase
+                const exportQuery = query(collection(db, "gk_assessments"), orderBy("created_at", "desc"));
+                const querySnapshot = await getDocs(exportQuery);
+
+                if (querySnapshot.empty) {
+                    alert("No data available to export.");
+                    exportCsvBtn.innerHTML = '<i class="fas fa-file-csv"></i> Export Full Database to CSV';
+                    exportCsvBtn.disabled = false;
+                    return;
+                }
+
+                // 2. Prepare the CSV Headers
+                let csvContent = "Criterion,Document Title,OPR,Status,Link / Location,Date Added\n";
+
+                // 3. Loop through every document and format it for the spreadsheet
+                querySnapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    
+                    // We wrap fields in quotes so commas inside titles don't break the columns
+                    const crit = `"${(data.criterion || '').replace(/"/g, '""')}"`;
+                    const title = `"${(data.document_name || '').replace(/"/g, '""')}"`;
+                    const opr = `"${(data.opr || '').replace(/"/g, '""')}"`;
+                    const status = `"${(data.status || '').replace(/"/g, '""')}"`;
+                    const link = `"${(data.file_url || '').replace(/"/g, '""')}"`;
+                    
+                    let dateAdded = '""';
+                    if (data.created_at) {
+                        dateAdded = `"${data.created_at.toDate().toLocaleDateString()}"`;
+                    }
+
+                    // Add the row to our CSV text block
+                    csvContent += `${crit},${title},${opr},${status},${link},${dateAdded}\n`;
+                });
+
+                // 4. Create the downloadable file
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const linkElement = document.createElement("a");
+                const url = URL.createObjectURL(blob);
+                
+                linkElement.setAttribute("href", url);
+                linkElement.setAttribute("download", "GK_2026_MOV_Tracker.csv"); // This is the file name
+                linkElement.style.visibility = 'hidden';
+                document.body.appendChild(linkElement);
+                linkElement.click();
+                document.body.removeChild(linkElement);
+
+                // Reset button text
+                exportCsvBtn.innerHTML = '<i class="fas fa-file-csv"></i> Export Full Database to CSV';
+                exportCsvBtn.disabled = false;
+
+            } catch (error) {
+                console.error("Error exporting data: ", error);
+                alert("An error occurred while generating the report.");
+                exportCsvBtn.innerHTML = '<i class="fas fa-file-csv"></i> Export Full Database to CSV';
+                exportCsvBtn.disabled = false;
+            }
         });
     }
 });
