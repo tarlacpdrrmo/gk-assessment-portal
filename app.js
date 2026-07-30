@@ -237,11 +237,15 @@ document.addEventListener("DOMContentLoaded", () => {
             updateBar("bar-knowledge", "text-knowledge", counts["Knowledge Management and Advocacy"], 5);
             updateBar("bar-partnership", "text-partnership", counts["Partnership and Participation"], 5);
 
-            // 3. Update the Top KPI Numbers
+// 3. Update the Top KPI Numbers
             const kpiCompletion = document.getElementById("kpiCompletion");
             const kpiFraction = document.getElementById("kpiFraction");
             const kpiPending = document.getElementById("kpiPending");
             const kpiReview = document.getElementById("kpiReview");
+            
+            // New Score Elements
+            const kpiScore = document.getElementById("kpiScore");
+            const kpiScoreText = document.getElementById("kpiScoreText");
 
             if (kpiCompletion && kpiFraction) {
                 const totalPercent = Math.round((totalOk / TOTAL_CRITERIA) * 100);
@@ -250,6 +254,25 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             if (kpiPending) kpiPending.innerText = pendingCount;
             if (kpiReview) kpiReview.innerText = reviewCount;
+
+            // Calculate Dynamic Score (Assuming Max Score of 3.0)
+            if (kpiScore && kpiScoreText) {
+                const maxScore = 3.00;
+                const currentScore = ((totalOk / TOTAL_CRITERIA) * maxScore).toFixed(2);
+                kpiScore.innerText = currentScore;
+
+                // Dynamically change the text and color based on the score
+                if (currentScore >= 2.50) {
+                    kpiScoreText.innerText = "Beyond Compliant (Projected)";
+                    kpiScore.style.color = "#f1c40f"; // Gold
+                } else if (currentScore >= 1.50) {
+                    kpiScoreText.innerText = "Fully Compliant (Projected)";
+                    kpiScore.style.color = "#3498db"; // Blue
+                } else {
+                    kpiScoreText.innerText = "Needs Improvement (Projected)";
+                    kpiScore.style.color = "#e74c3c"; // Red
+                }
+            }
 
             // 4. Update the Priority Table
             const priorityTable = document.getElementById("priorityOprTableBody");
