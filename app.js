@@ -15,7 +15,9 @@ const db = getFirestore(app);
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // UI Elements
+    // ==========================================
+    // MODULE 1: MOV CHECKLIST LOGIC
+    // ==========================================
     const modal = document.getElementById("recordModal");
     const openModalBtn = document.getElementById("openModalBtn");
     const closeModalBtn = document.getElementById("closeModalBtn");
@@ -23,28 +25,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const tableBody = document.getElementById("checklistTableBody");
     const modalTitle = document.querySelector(".modal-header h3");
 
-    let currentEditId = null; // Tracks if we are editing or adding
+    let currentEditId = null;
 
-    // OPEN MODAL (For Adding)
     if (openModalBtn) {
         openModalBtn.addEventListener("click", () => {
             currentEditId = null;
             recordForm.reset();
-            modalTitle.innerHTML = '<i class="fas fa-file-medical"></i> Add New Assessment MOV';
+            if (modalTitle) modalTitle.innerHTML = '<i class="fas fa-file-medical"></i> Add New Assessment MOV';
             modal.style.display = "flex";
         });
     }
 
-    // CLOSE MODAL
-    if (closeModalBtn) {
-        closeModalBtn.addEventListener("click", () => modal.style.display = "none");
-    }
+    if (closeModalBtn) closeModalBtn.addEventListener("click", () => modal.style.display = "none");
 
-    // FORM SUBMIT (Handles both Add and Edit)
     if (recordForm) {
         recordForm.addEventListener("submit", async (e) => {
             e.preventDefault();
-            
             const recordData = {
                 criterion: document.getElementById("inputCriterion").value,
                 document_name: document.getElementById("inputTitle").value,
@@ -56,16 +52,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
             try {
                 if (currentEditId) {
-                    // UPDATE EXISTING RECORD
                     await updateDoc(doc(db, "gk_assessments", currentEditId), recordData);
                     alert("Record successfully updated!");
                 } else {
-                    // ADD NEW RECORD
                     recordData.created_at = new Date();
                     await addDoc(collection(db, "gk_assessments"), recordData);
                     alert("New record successfully saved!");
                 }
-                
                 recordForm.reset();
                 modal.style.display = "none";
                 currentEditId = null;
@@ -76,23 +69,18 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // REAL-TIME READ & RENDER (With Delete & Edit buttons)
     if (tableBody) {
         const q = query(collection(db, "gk_assessments"), orderBy("created_at", "desc"));
-        
         onSnapshot(q, (snapshot) => {
             tableBody.innerHTML = "";
-            
             if (snapshot.empty) {
                 tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No records found. Click "Add New Record" to create one.</td></tr>';
                 return;
             }
-
             snapshot.forEach((documentSnap) => {
                 const data = documentSnap.data();
                 const id = documentSnap.id;
                 const row = document.createElement("tr");
-                
                 row.innerHTML = `
                     <td><strong>${data.criterion || ''}</strong></td>
                     <td>${data.document_name || ''}</td>
@@ -107,29 +95,23 @@ document.addEventListener("DOMContentLoaded", () => {
                 tableBody.appendChild(row);
             });
 
-            // Attach Click Listeners for EDIT Buttons
             document.querySelectorAll(".btn-edit").forEach(btn => {
                 btn.addEventListener("click", async (e) => {
                     const docId = e.currentTarget.getAttribute("data-id");
-                    currentEditId = docId; // Set the tracker
-                    
-                    // Grab the row's data from the table HTML directly to fill the form instantly
+                    currentEditId = docId;
                     const row = e.currentTarget.closest("tr");
                     document.getElementById("inputCriterion").value = row.cells[0].innerText.trim();
                     document.getElementById("inputTitle").value = row.cells[1].innerText.trim();
                     document.getElementById("inputOPR").value = row.cells[2].innerText.trim();
                     document.getElementById("inputStatus").value = row.cells[3].innerText.trim();
-                    
                     let linkText = row.cells[4].innerText.trim();
                     if(linkText === "View Link") linkText = row.cells[4].querySelector('a').href;
                     document.getElementById("inputFileUrl").value = linkText;
-
-                    modalTitle.innerHTML = '<i class="fas fa-edit"></i> Edit Assessment MOV';
-                    modal.style.display = "flex"; // Open the modal
+                    if (modalTitle) modalTitle.innerHTML = '<i class="fas fa-edit"></i> Edit Assessment MOV';
+                    modal.style.display = "flex";
                 });
             });
 
-            // Attach Click Listeners for DELETE Buttons
             document.querySelectorAll(".btn-delete").forEach(btn => {
                 btn.addEventListener("click", async (e) => {
                     const docId = e.currentTarget.getAttribute("data-id");
@@ -141,25 +123,22 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-  // ==========================================
-    // DASHBOARD KPI CALCULATIONS
+    // ==========================================
+    // MODULE 2: DASHBOARD KPI LOGIC
     // ==========================================
     const kpiCompletion = document.getElementById("kpiCompletion");
     const kpiFraction = document.getElementById("kpiFraction");
     const kpiPending = document.getElementById("kpiPending");
     const kpiReview = document.getElementById("kpiReview");
 
-    // Only run this math if we are actually on the Dashboard page
     if (kpiCompletion) { 
         const dashboardQuery = query(collection(db, "gk_assessments"));
-        
         onSnapshot(dashboardQuery, (snapshot) => {
             let okCount = 0;
             let pendingCount = 0;
             let reviewCount = 0;
-            const TOTAL_CRITERIA = 26; // Total GK requirements
+            const TOTAL_CRITERIA = 26;
 
-            // Loop through all database records and count the statuses
             snapshot.forEach((doc) => {
                 const status = doc.data().status;
                 if (status === "OK / Scanned" || status === "Hardcopy On Hand") okCount++;
@@ -167,15 +146,62 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (status === "Under Review") reviewCount++;
             });
 
-            // Calculate the percentage
             const percentage = Math.round((okCount / TOTAL_CRITERIA) * 100);
-
-            // Push the live numbers to the HTML screen
             kpiCompletion.innerText = `${percentage}%`;
             kpiFraction.innerText = `${okCount}/${TOTAL_CRITERIA} Criteria Uploaded`;
             kpiPending.innerText = pendingCount;
             kpiReview.innerText = reviewCount;
         });
     }
-  
+
+    // ==========================================
+    // MODULE 3: OPR TRACKER LOGIC
+    // ==========================================
+    const trackerTableBody = document.getElementById("trackerTableBody");
+
+    if (trackerTableBody) {
+        const trackerQuery = query(collection(db, "gk_assessments"), orderBy("created_at", "desc"));
+        
+        onSnapshot(trackerQuery, (snapshot) => {
+            trackerTableBody.innerHTML = "";
+            let hasPendingItems = false;
+
+            snapshot.forEach((documentSnap) => {
+                const data = documentSnap.data();
+                
+                // FILTER: Only show this row if the status is "Requested"
+                if (data.status === "Requested") {
+                    hasPendingItems = true;
+                    const row = document.createElement("tr");
+                    
+                    // Calculate Days Pending
+                    let daysPending = 0;
+                    if (data.created_at) {
+                        const createdDate = data.created_at.toDate();
+                        const today = new Date();
+                        const diffTime = Math.abs(today - createdDate);
+                        daysPending = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    }
+
+                    row.innerHTML = `
+                        <td><strong>${data.criterion || ''}</strong></td>
+                        <td>${data.document_name || ''}</td>
+                        <td><span class="badge badge-external">${data.opr || ''}</span></td>
+                        <td><span style="color: #e67e22; font-weight: bold;">${daysPending} Days</span></td>
+                        <td>
+                            <button style="background: #3498db; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.85em;">
+                                <i class="fas fa-envelope"></i> Draft Email
+                            </button>
+                        </td>
+                    `;
+                    trackerTableBody.appendChild(row);
+                }
+            });
+
+            // If there are no requested items, show a success message
+            if (!hasPendingItems) {
+                trackerTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #27ae60; padding: 20px;"><strong><i class="fas fa-check-circle"></i> All caught up! No pending requests.</strong></td></tr>';
+            }
+        });
+    }
 });
