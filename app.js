@@ -18,7 +18,7 @@ const auth = getAuth(app); // Initialize Authentication
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // ==========================================
+   // ==========================================
     // MODULE 0: SECURITY & AUTHENTICATION
     // ==========================================
     const currentPage = window.location.pathname;
@@ -83,15 +83,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 console.error("Login Error:", error);
                 alert("Invalid Email or Password. Please try again.");
             }
-        });
-    }
-
-    // 3. Handle Logout Button
-    const logoutBtn = document.getElementById("logoutBtn");
-    if (logoutBtn) {
-        logoutBtn.addEventListener("click", async (e) => {
-            e.preventDefault();
-            await signOut(auth);
         });
     }
 
