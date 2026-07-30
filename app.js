@@ -154,8 +154,8 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // ==========================================
-    // MODULE 3: OPR TRACKER LOGIC
+   // ==========================================
+    // MODULE 3: OPR TRACKER LOGIC (With Email Automation)
     // ==========================================
     const trackerTableBody = document.getElementById("trackerTableBody");
 
@@ -169,12 +169,10 @@ document.addEventListener("DOMContentLoaded", () => {
             snapshot.forEach((documentSnap) => {
                 const data = documentSnap.data();
                 
-                // FILTER: Only show this row if the status is "Requested"
                 if (data.status === "Requested") {
                     hasPendingItems = true;
                     const row = document.createElement("tr");
                     
-                    // Calculate Days Pending
                     let daysPending = 0;
                     if (data.created_at) {
                         const createdDate = data.created_at.toDate();
@@ -189,7 +187,11 @@ document.addEventListener("DOMContentLoaded", () => {
                         <td><span class="badge badge-external">${data.opr || ''}</span></td>
                         <td><span style="color: #e67e22; font-weight: bold;">${daysPending} Days</span></td>
                         <td>
-                            <button style="background: #3498db; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.85em;">
+                            <button class="btn-email" 
+                                data-opr="${data.opr || ''}" 
+                                data-crit="${data.criterion || ''}" 
+                                data-doc="${data.document_name || ''}" 
+                                style="background: #3498db; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.85em;">
                                 <i class="fas fa-envelope"></i> Draft Email
                             </button>
                         </td>
@@ -198,10 +200,35 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             });
 
-            // If there are no requested items, show a success message
             if (!hasPendingItems) {
                 trackerTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #27ae60; padding: 20px;"><strong><i class="fas fa-check-circle"></i> All caught up! No pending requests.</strong></td></tr>';
             }
+
+            // --- NEW AUTOMATED EMAIL LOGIC ---
+            document.querySelectorAll(".btn-email").forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    // Pull the specific data embedded in the button
+                    const targetOPR = e.currentTarget.getAttribute("data-opr");
+                    const targetCrit = e.currentTarget.getAttribute("data-crit");
+                    const targetDoc = e.currentTarget.getAttribute("data-doc");
+
+                    // Format the Subject and Body of the email
+                    const subject = encodeURIComponent(`URGENT: Gawad KALASAG 2026 Requirement - ${targetCrit}`);
+                    const body = encodeURIComponent(
+                        `Good day ${targetOPR} Team,\n\n` +
+                        `We are currently preparing our documents for the Gawad KALASAG 2026 Assessment.\n\n` +
+                        `Could we kindly request a soft copy of the following document to be uploaded or sent to our office at your earliest convenience?\n\n` +
+                        `Criterion: ${targetCrit}\n` +
+                        `Required Document: ${targetDoc}\n\n` +
+                        `Please let us know if you have any questions or require further clarification.\n\n` +
+                        `Thank you,\n` +
+                        `PDRRMO Tarlac`
+                    );
+
+                    // Trigger the email client to open
+                    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+                });
+            });
         });
     }
 });
