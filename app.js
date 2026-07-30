@@ -24,12 +24,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const currentPage = window.location.pathname;
     const isLoginPage = currentPage.includes("login.html");
     const adminNav = document.getElementById("adminNav");
+    const userRoleDisplay = document.getElementById("userRoleDisplay");
     
-    // Define the Master Admins (Add your 2 extra emails here later, separated by commas)
+    // Define the Master Admins
     const LEAD_ADMIN_EMAILS = [
         "paness9793@gmail.com"
-        // "second_admin@tarlac.gov.ph", 
-        // "third_admin@tarlac.gov.ph"
+        // "newadmin1@gmail.com", 
+        // "newadmin2@gmail.com"
     ]; 
     
     // Global variable so the rest of the app knows the user's role
@@ -38,22 +39,30 @@ document.addEventListener("DOMContentLoaded", () => {
     // 1. Listen for User Login Status & Enforce Roles
     onAuthStateChanged(auth, (user) => {
         if (!user && !isLoginPage) {
-            // Not logged in? Kick to login screen.
             window.location.href = "login.html";
         } else if (user && isLoginPage) {
-            // Logged in but on the login page? Push to dashboard.
             window.location.href = "index.html";
         } else if (user) {
-            // Establish Role: Checks if the logged-in email exists in our Master list
+            // Establish Role
             isLeadAdmin = LEAD_ADMIN_EMAILS.includes(user.email);
+
+            // Update the top-right profile text dynamically
+            if (userRoleDisplay) {
+                if (isLeadAdmin) {
+                    userRoleDisplay.innerHTML = '<i class="fas fa-user-shield"></i> Master Admin';
+                } else {
+                    userRoleDisplay.innerHTML = '<i class="fas fa-user"></i> LGU Encoder';
+                }
+            }
 
             // ENCODER RESTRICTIONS
             if (!isLeadAdmin) {
                 // 1. Hide the Admin menu on the sidebar
                 if (adminNav) adminNav.style.display = "none";
                 
-                // 2. If an Encoder tries to type /admin.html into the URL bar, kick them to the dashboard
+                // 2. Alert and block if they type /admin.html into the browser URL
                 if (currentPage.includes("admin.html")) {
+                    alert("ACCESS DENIED: Your account does not have Master Admin privileges. Redirecting to the Dashboard.");
                     window.location.href = "index.html";
                 }
             }
@@ -74,6 +83,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 console.error("Login Error:", error);
                 alert("Invalid Email or Password. Please try again.");
             }
+        });
+    }
+
+    // 3. Handle Logout Button
+    const logoutBtn = document.getElementById("logoutBtn");
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", async (e) => {
+            e.preventDefault();
+            await signOut(auth);
         });
     }
 
