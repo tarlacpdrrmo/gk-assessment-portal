@@ -29,11 +29,15 @@ document.addEventListener("DOMContentLoaded", () => {
     // Define the Master Admins
     const LEAD_ADMIN_EMAILS = [
         "paness9793@gmail.com"
-        // "newadmin1@gmail.com", 
-        // "newadmin2@gmail.com"
     ]; 
     
-    // Global variable so the rest of the app knows the user's role
+    // Define Team Nicknames / Display Names
+    const TEAM_NAMES = {
+        "paness9793@gmail.com": "Boss Admin", // Change this to your actual name/nickname!
+        "encoder@tarlac.gov.ph": "Juan (PSWDO)", // Example staff 1
+        "another@tarlac.gov.ph": "Maria (PHRMO)" // Example staff 2
+    };
+
     let isLeadAdmin = false; 
 
     // 1. Listen for User Login Status & Enforce Roles
@@ -46,21 +50,21 @@ document.addEventListener("DOMContentLoaded", () => {
             // Establish Role
             isLeadAdmin = LEAD_ADMIN_EMAILS.includes(user.email);
 
+            // Look up the user's nickname, or default to their email address if not on the list
+            const displayName = TEAM_NAMES[user.email] || user.email.split('@')[0];
+
             // Update the top-right profile text dynamically
             if (userRoleDisplay) {
                 if (isLeadAdmin) {
-                    userRoleDisplay.innerHTML = '<i class="fas fa-user-shield"></i> Master Admin';
+                    userRoleDisplay.innerHTML = `<i class="fas fa-user-shield"></i> ${displayName}`;
                 } else {
-                    userRoleDisplay.innerHTML = '<i class="fas fa-user"></i> LGU Encoder';
+                    userRoleDisplay.innerHTML = `<i class="fas fa-user"></i> ${displayName}`;
                 }
             }
 
             // ENCODER RESTRICTIONS
             if (!isLeadAdmin) {
-                // 1. Hide the Admin menu on the sidebar
                 if (adminNav) adminNav.style.display = "none";
-                
-                // 2. Alert and block if they type /admin.html into the browser URL
                 if (currentPage.includes("admin.html")) {
                     alert("ACCESS DENIED: Your account does not have Master Admin privileges. Redirecting to the Dashboard.");
                     window.location.href = "index.html";
