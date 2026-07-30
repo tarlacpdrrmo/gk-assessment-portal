@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OPR Tracker | GK 2026 Portal</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+
+    <!-- SIDEBAR NAVIGATION -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h2><i class="fas fa-shield-alt"></i> GK Portal</h2>
+            <p>PDRRMO Tarlac</p>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+            <li><a href="checklist.html"><i class="fas fa-folder-open"></i> MOV Checklist</a></li>
+            <li class="active"><a href="tracker.html"><i class="fas fa-tasks"></i> OPR Request Tracker</a></li>
+            <li><a href="#"><i class="fas fa-file-export"></i> Sheets & Reports</a></li>
+            <li><a href="#"><i class="fas fa-cog"></i> Admin Settings</a></li>
+        </ul>
+    </nav>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="main-content">
+        <header class="top-header">
+            <div class="page-title">
+                <h1>OPR Request Tracker</h1>
+                <p>Monitor pending documents requested from external partner offices.</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn-primary" style="background-color: #3498db; border: none; padding: 10px 20px; color: white; border-radius: 4px; font-weight: bold; cursor: pointer;">
+                    <i class="fas fa-paper-plane"></i> Send Bulk Reminder
+                </button>
+            </div>
+        </header>
+
+        <!-- PENDING REQUESTS TABLE -->
+        <section class="panel table-container">
+            <h3><i class="fas fa-clock" style="color: #e67e22;"></i> Awaiting External Action</h3>
+            <table class="data-table checklist-table">
+                <thead>
+                    <tr>
+                        <th>Criterion</th>
+                        <th>Missing Document</th>
+                        <th>Target OPR</th>
+                        <th>Days Pending</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="trackerTableBody">
+                    <!-- Firebase will inject only "Requested" items here -->
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: #7f8c8d;">Loading pending requests...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <!-- MODULE SCRIPT TAG -->
+    <script type="module" src="app.js"></script>
+</body>
+</html>
