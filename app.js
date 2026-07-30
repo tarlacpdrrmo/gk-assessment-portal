@@ -390,4 +390,32 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+
+// --- 3. Dynamic Dropdown Population for Checklist Form ---
+    const inputOPR = document.getElementById("inputOPR");
+    const inputStatus = document.getElementById("inputStatus");
+
+    if (inputOPR) {
+        onSnapshot(query(collection(db, "gk_oprs"), orderBy("name")), (snapshot) => {
+            inputOPR.innerHTML = '<option value="">Select OPR...</option>';
+            snapshot.forEach((docSnap) => {
+                const opt = document.createElement("option");
+                opt.value = docSnap.data().name;
+                opt.innerText = docSnap.data().name;
+                inputOPR.appendChild(opt);
+            });
+        });
+    }
+
+    if (inputStatus) {
+        onSnapshot(query(collection(db, "gk_statuses"), orderBy("name")), (snapshot) => {
+            inputStatus.innerHTML = '<option value="">Select Status...</option>';
+            snapshot.forEach((docSnap) => {
+                const opt = document.createElement("option");
+                opt.value = docSnap.data().name;
+                opt.innerText = docSnap.data().name;
+                inputStatus.appendChild(opt);
+            });
+        });
+    }
 });
