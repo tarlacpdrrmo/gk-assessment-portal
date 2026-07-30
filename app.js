@@ -298,4 +298,96 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+
+  // ==========================================
+    // MODULE 5: ADMIN SETTINGS LOGIC
+    // ==========================================
+    const oprList = document.getElementById("oprList");
+    const addOprForm = document.getElementById("addOprForm");
+    const statusList = document.getElementById("statusList");
+    const addStatusForm = document.getElementById("addStatusForm");
+
+    // --- 1. OPR Management ---
+    if (oprList && addOprForm) {
+        // Load OPRs from Firebase
+        onSnapshot(query(collection(db, "gk_oprs"), orderBy("name")), (snapshot) => {
+            oprList.innerHTML = "";
+            if (snapshot.empty) {
+                oprList.innerHTML = '<li><span style="color:#7f8c8d;">No OPRs found. Add one below.</span></li>';
+            }
+            snapshot.forEach((docSnap) => {
+                const id = docSnap.id;
+                const name = docSnap.data().name;
+                const li = document.createElement("li");
+                li.innerHTML = `
+                    <strong>${name}</strong>
+                    <button class="btn-del-opr" data-id="${id}" style="background: #e74c3c; border: none; color: white; padding: 4px 8px; border-radius: 4px; cursor: pointer;"><i class="fas fa-trash"></i></button>
+                `;
+                oprList.appendChild(li);
+            });
+
+            // Delete OPR Logic
+            document.querySelectorAll(".btn-del-opr").forEach(btn => {
+                btn.addEventListener("click", async (e) => {
+                    const docId = e.currentTarget.getAttribute("data-id");
+                    if (confirm("Are you sure you want to delete this OPR?")) {
+                        await deleteDoc(doc(db, "gk_oprs", docId));
+                    }
+                });
+            });
+        });
+
+        // Add New OPR Logic
+        addOprForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const input = document.getElementById("newOprInput");
+            const newName = input.value.trim();
+            if (newName) {
+                await addDoc(collection(db, "gk_oprs"), { name: newName });
+                input.value = ""; // Automatically clear the input box
+            }
+        });
+    }
+
+    // --- 2. Status Tag Management ---
+    if (statusList && addStatusForm) {
+        // Load Statuses from Firebase
+        onSnapshot(query(collection(db, "gk_statuses"), orderBy("name")), (snapshot) => {
+            statusList.innerHTML = "";
+            if (snapshot.empty) {
+                statusList.innerHTML = '<li><span style="color:#7f8c8d;">No status tags found. Add one below.</span></li>';
+            }
+            snapshot.forEach((docSnap) => {
+                const id = docSnap.id;
+                const name = docSnap.data().name;
+                const li = document.createElement("li");
+                li.innerHTML = `
+                    <strong>${name}</strong>
+                    <button class="btn-del-status" data-id="${id}" style="background: #e74c3c; border: none; color: white; padding: 4px 8px; border-radius: 4px; cursor: pointer;"><i class="fas fa-trash"></i></button>
+                `;
+                statusList.appendChild(li);
+            });
+
+            // Delete Status Logic
+            document.querySelectorAll(".btn-del-status").forEach(btn => {
+                btn.addEventListener("click", async (e) => {
+                    const docId = e.currentTarget.getAttribute("data-id");
+                    if (confirm("Are you sure you want to delete this Status Tag?")) {
+                        await deleteDoc(doc(db, "gk_statuses", docId));
+                    }
+                });
+            });
+        });
+
+        // Add New Status Logic
+        addStatusForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const input = document.getElementById("newStatusInput");
+            const newName = input.value.trim();
+            if (newName) {
+                await addDoc(collection(db, "gk_statuses"), { name: newName });
+                input.value = ""; // Automatically clear the input box
+            }
+        });
+    }
 });
