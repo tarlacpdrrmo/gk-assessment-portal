@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
     // Define Team Nicknames / Display Names
     const TEAM_NAMES = {
-        "paness9793@gmail.com": "Boss Admin", // Change this to your actual name/nickname!
+        "paness9793@gmail.com": "Admin", // Change this to your actual name/nickname!
         "encoder@tarlac.gov.ph": "Juan (PSWDO)", // Example staff 1
         "another@tarlac.gov.ph": "Maria (PHRMO)" // Example staff 2
     };
