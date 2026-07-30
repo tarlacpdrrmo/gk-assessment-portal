@@ -47,26 +47,33 @@
 
         <!-- KPI SUMMARY CARDS -->
         <section class="kpi-grid">
-            <div class="kpi-card">
-                <h3>Overall Completion</h3>
-                <h2 class="text-blue">45%</h2>
-                <p>12/26 Criteria Uploaded</p>
-            </div>
-            <div class="kpi-card">
-                <h3>Est. Assessment Score</h3>
-                <h2 class="text-gold">2.61</h2>
-                <p>Gold Recognition (Projected)</p>
-            </div>
-            <div class="kpi-card">
-                <h3>Pending OPR Requests</h3>
-                <h2 class="text-red">8</h2>
-                <p>Emails waiting to be sent</p>
-            </div>
-            <div class="kpi-card">
-                <h3>Items Under Review</h3>
-                <h2 class="text-orange">3</h2>
-                <p>Awaiting Admin Approval</p>
-            </div>
+<!-- KPI 1: Overall Completion -->
+<div class="kpi-box">
+    <p>Overall Completion</p>
+    <h2 id="kpiCompletion" style="color: #3498db;">0%</h2>
+    <p id="kpiFraction" class="text-muted">0/26 Criteria Uploaded</p>
+</div>
+
+<!-- KPI 2: Est. Score (We will leave this static for now) -->
+<div class="kpi-box">
+    <p>Est. Assessment Score</p>
+    <h2 style="color: #f1c40f;">2.61</h2>
+    <p class="text-muted">Gold Recognition (Projected)</p>
+</div>
+
+<!-- KPI 3: Pending OPR Requests -->
+<div class="kpi-box">
+    <p>Pending OPR Requests</p>
+    <h2 id="kpiPending" style="color: #e74c3c;">0</h2>
+    <p class="text-muted">Emails waiting to be sent</p>
+</div>
+
+<!-- KPI 4: Items Under Review -->
+<div class="kpi-box">
+    <p>Items Under Review</p>
+    <h2 id="kpiReview" style="color: #e67e22;">0</h2>
+    <p class="text-muted">Awaiting Admin Approval</p>
+</div>
         </section>
 
         <!-- PILLAR STATUS & ACTION ITEMS -->
