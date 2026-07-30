@@ -89,6 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
         recordForm.addEventListener("submit", async (e) => {
             e.preventDefault();
             const recordData = {
+                pillar: document.getElementById("inputPillar").value,
                 criterion: document.getElementById("inputCriterion").value,
                 document_name: document.getElementById("inputTitle").value,
                 opr: document.getElementById("inputOPR").value,
@@ -129,6 +130,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const id = documentSnap.id;
                 const row = document.createElement("tr");
                 row.innerHTML = `
+                    <td><span style="font-size: 0.85em; color: #7f8c8d; font-weight: bold;">${data.pillar || 'Uncategorized'}</span></td> <!-- NEW LINE -->
                     <td><strong>${data.criterion || ''}</strong></td>
                     <td>${data.document_name || ''}</td>
                     <td><span class="badge badge-internal">${data.opr || ''}</span></td>
@@ -170,34 +172,28 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+// ==========================================
+    // MODULE 2: NEW PILLAR DASHBOARD LOGIC
     // ==========================================
-    // MODULE 2: DASHBOARD KPI LOGIC
-    // ==========================================
-    const kpiCompletion = document.getElementById("kpiCompletion");
-    const kpiFraction = document.getElementById("kpiFraction");
-    const kpiPending = document.getElementById("kpiPending");
-    const kpiReview = document.getElementById("kpiReview");
-
-    if (kpiCompletion) { 
-        const dashboardQuery = query(collection(db, "gk_assessments"));
-        onSnapshot(dashboardQuery, (snapshot) => {
-            let okCount = 0;
-            let pendingCount = 0;
-            let reviewCount = 0;
-            const TOTAL_CRITERIA = 26;
+    const kpiStructure = document.getElementById("kpiStructure");
+    if (kpiStructure) { 
+        onSnapshot(query(collection(db, "gk_assessments")), (snapshot) => {
+            let counts = { "Structure": 0, "Competency": 0, "Management Systems": 0, "Enabling Policies": 0, "Knowledge Management and Advocacy": 0, "Partnership and Participation": 0 };
 
             snapshot.forEach((doc) => {
-                const status = doc.data().status;
-                if (status === "OK / Scanned" || status === "Hardcopy On Hand") okCount++;
-                if (status === "Requested") pendingCount++;
-                if (status === "Under Review") reviewCount++;
+                const data = doc.data();
+                // Only count it if the status means it is completed
+                if (data.status === "OK / Scanned" || data.status === "Hardcopy On Hand") {
+                    if (counts[data.pillar] !== undefined) counts[data.pillar]++;
+                }
             });
 
-            const percentage = Math.round((okCount / TOTAL_CRITERIA) * 100);
-            kpiCompletion.innerText = `${percentage}%`;
-            kpiFraction.innerText = `${okCount}/${TOTAL_CRITERIA} Criteria Uploaded`;
-            kpiPending.innerText = pendingCount;
-            kpiReview.innerText = reviewCount;
+            document.getElementById("kpiStructure").innerText = `${counts["Structure"]} MOV`;
+            document.getElementById("kpiCompetency").innerText = `${counts["Competency"]} MOV`;
+            document.getElementById("kpiManagement").innerText = `${counts["Management Systems"]} MOV`;
+            document.getElementById("kpiPolicies").innerText = `${counts["Enabling Policies"]} MOV`;
+            document.getElementById("kpiKnowledge").innerText = `${counts["Knowledge Management and Advocacy"]} MOV`;
+            document.getElementById("kpiPartnership").innerText = `${counts["Partnership and Participation"]} MOV`;
         });
     }
 
