@@ -62,8 +62,8 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // ==========================================
-    // MODULE 1: MOV CHECKLIST LOGIC
+   // ==========================================
+    // MODULE 1: MOV CHECKLIST LOGIC (UPDATED FOR 7 COLUMNS)
     // ==========================================
     const modal = document.getElementById("recordModal");
     const openModalBtn = document.getElementById("openModalBtn");
@@ -88,6 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (recordForm) {
         recordForm.addEventListener("submit", async (e) => {
             e.preventDefault();
+            // FIXED: Added Pillar to the save package
             const recordData = {
                 pillar: document.getElementById("inputPillar").value,
                 criterion: document.getElementById("inputCriterion").value,
@@ -122,15 +123,17 @@ document.addEventListener("DOMContentLoaded", () => {
         onSnapshot(q, (snapshot) => {
             tableBody.innerHTML = "";
             if (snapshot.empty) {
-                tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No records found. Click "Add New Record" to create one.</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">No records found. Click "Add New Record" to create one.</td></tr>';
                 return;
             }
             snapshot.forEach((documentSnap) => {
                 const data = documentSnap.data();
                 const id = documentSnap.id;
                 const row = document.createElement("tr");
+                
+                // FIXED: Rendering all 7 columns perfectly
                 row.innerHTML = `
-                    <td><span style="font-size: 0.85em; color: #7f8c8d; font-weight: bold;">${data.pillar || 'Uncategorized'}</span></td> <!-- NEW LINE -->
+                    <td style="color: #7f8c8d; font-size: 0.9em;">${data.pillar || ''}</td>
                     <td><strong>${data.criterion || ''}</strong></td>
                     <td>${data.document_name || ''}</td>
                     <td><span class="badge badge-internal">${data.opr || ''}</span></td>
@@ -144,18 +147,23 @@ document.addEventListener("DOMContentLoaded", () => {
                 tableBody.appendChild(row);
             });
 
+            // FIXED: Shifted the column numbers by +1 so the Edit button grabs the correct data
             document.querySelectorAll(".btn-edit").forEach(btn => {
                 btn.addEventListener("click", async (e) => {
                     const docId = e.currentTarget.getAttribute("data-id");
                     currentEditId = docId;
                     const row = e.currentTarget.closest("tr");
-                    document.getElementById("inputCriterion").value = row.cells[0].innerText.trim();
-                    document.getElementById("inputTitle").value = row.cells[1].innerText.trim();
-                    document.getElementById("inputOPR").value = row.cells[2].innerText.trim();
-                    document.getElementById("inputStatus").value = row.cells[3].innerText.trim();
-                    let linkText = row.cells[4].innerText.trim();
-                    if(linkText === "View Link") linkText = row.cells[4].querySelector('a').href;
+                    
+                    document.getElementById("inputPillar").value = row.cells[0].innerText.trim();
+                    document.getElementById("inputCriterion").value = row.cells[1].innerText.trim();
+                    document.getElementById("inputTitle").value = row.cells[2].innerText.trim();
+                    document.getElementById("inputOPR").value = row.cells[3].innerText.trim();
+                    document.getElementById("inputStatus").value = row.cells[4].innerText.trim();
+                    
+                    let linkText = row.cells[5].innerText.trim();
+                    if(linkText === "View Link") linkText = row.cells[5].querySelector('a').href;
                     document.getElementById("inputFileUrl").value = linkText;
+                    
                     if (modalTitle) modalTitle.innerHTML = '<i class="fas fa-edit"></i> Edit Assessment MOV';
                     modal.style.display = "flex";
                 });
