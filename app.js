@@ -209,7 +209,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (bar && text) {
                     const percent = Math.min((count / target) * 100, 100);
                     bar.style.width = `${percent}%`;
-                    text.innerText = `${count} MOV`;
+                    text.innerText = count;
                 }
             };
 
