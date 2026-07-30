@@ -181,36 +181,45 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 // ==========================================
-    // MODULE 2: DASHBOARD PROGRESS BAR LOGIC
+    // MODULE 2: UNIFIED DASHBOARD LOGIC
     // ==========================================
     const barStructure = document.getElementById("bar-structure");
     
     if (barStructure) { 
-        onSnapshot(query(collection(db, "gk_assessments")), (snapshot) => {
+        // We run ONE query to pull everything for the dashboard
+        onSnapshot(collection(db, "gk_assessments"), (snapshot) => {
             let counts = { 
-                "Structure": 0, 
-                "Competency": 0, 
-                "Management Systems": 0, 
-                "Enabling Policies": 0, 
-                "Knowledge Management and Advocacy": 0, 
-                "Partnership and Participation": 0 
+                "Structure": 0, "Competency": 0, "Management Systems": 0, 
+                "Enabling Policies": 0, "Knowledge Management and Advocacy": 0, "Partnership and Participation": 0 
             };
             
             let totalOk = 0;
+            let pendingCount = 0;
+            let reviewCount = 0;
+            let requestedItems = []; // Array to hold table data
             const TOTAL_CRITERIA = 26;
 
-            // 1. Count the completed items
-            snapshot.forEach((doc) => {
-                const data = doc.data();
+            // 1. Tally up all the data
+            snapshot.forEach((docSnap) => {
+                const data = docSnap.data();
+                
+                // Count completed items for bars
                 if (data.status === "OK / Scanned" || data.status === "Hardcopy On Hand") {
                     if (counts[data.pillar] !== undefined) counts[data.pillar]++;
                     totalOk++;
                 }
+
+                // Count KPIs and collect Requested items for the table
+                if (data.status === "Requested") {
+                    pendingCount++;
+                    requestedItems.push(data);
+                }
+                if (data.status === "Under Review") {
+                    reviewCount++;
+                }
             });
 
-            // 2. Function to visually update the bars
-            // Note: We are temporarily setting the target for each pillar to 5 to generate the percentage width. 
-            // We can easily adjust these targets later once the exact criteria count per pillar is finalized.
+            // 2. Update Progress Bars
             const updateBar = (id, textId, count, target) => {
                 const bar = document.getElementById(id);
                 const text = document.getElementById(textId);
@@ -221,7 +230,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             };
 
-            // 3. Execute the visual update for each pillar
             updateBar("bar-structure", "text-structure", counts["Structure"], 5);
             updateBar("bar-competency", "text-competency", counts["Competency"], 5);
             updateBar("bar-management", "text-management", counts["Management Systems"], 5);
@@ -229,13 +237,51 @@ document.addEventListener("DOMContentLoaded", () => {
             updateBar("bar-knowledge", "text-knowledge", counts["Knowledge Management and Advocacy"], 5);
             updateBar("bar-partnership", "text-partnership", counts["Partnership and Participation"], 5);
 
-            // 4. Update the Overall Completion fraction at the top
+            // 3. Update the Top KPI Numbers
             const kpiCompletion = document.getElementById("kpiCompletion");
             const kpiFraction = document.getElementById("kpiFraction");
-            if(kpiCompletion && kpiFraction) {
+            const kpiPending = document.getElementById("kpiPending");
+            const kpiReview = document.getElementById("kpiReview");
+
+            if (kpiCompletion && kpiFraction) {
                 const totalPercent = Math.round((totalOk / TOTAL_CRITERIA) * 100);
                 kpiCompletion.innerText = `${totalPercent}%`;
                 kpiFraction.innerText = `${totalOk}/${TOTAL_CRITERIA} Criteria Uploaded`;
+            }
+            if (kpiPending) kpiPending.innerText = pendingCount;
+            if (kpiReview) kpiReview.innerText = reviewCount;
+
+            // 4. Update the Priority Table
+            const priorityTable = document.getElementById("priorityOprTableBody");
+            if (priorityTable) {
+                priorityTable.innerHTML = "";
+                
+                if (requestedItems.length === 0) {
+                    priorityTable.innerHTML = '<tr><td colspan="4" style="padding: 20px; text-align: center; color: #27ae60;"><strong><i class="fas fa-check-circle"></i> All caught up! No pending OPR requests.</strong></td></tr>';
+                } else {
+                    // Sort items in JavaScript (newest first) to bypass Firebase index errors
+                    requestedItems.sort((a, b) => {
+                        const dateA = a.created_at ? a.created_at.toMillis() : 0;
+                        const dateB = b.created_at ? b.created_at.toMillis() : 0;
+                        return dateB - dateA;
+                    });
+
+                    // Take the top 4 items and inject them into the table
+                    const topItems = requestedItems.slice(0, 4);
+                    topItems.forEach(item => {
+                        const row = document.createElement("tr");
+                        row.style.borderBottom = "1px solid #ecf0f1";
+                        row.innerHTML = `
+                            <td style="padding: 10px; font-weight: bold; color: #34495e;">${item.criterion || 'N/A'}</td>
+                            <td style="padding: 10px; font-size: 0.85em; color: #7f8c8d;">${item.document_name || 'Unnamed Document'}</td>
+                            <td style="padding: 10px;"><strong>${item.opr || 'N/A'}</strong></td>
+                            <td style="padding: 10px;">
+                                <a href="tracker.html" style="background: #3498db; color: white; padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 0.85em; display: inline-block;">Track Email</a>
+                            </td>
+                        `;
+                        priorityTable.appendChild(row);
+                    });
+                }
             }
         });
     }
