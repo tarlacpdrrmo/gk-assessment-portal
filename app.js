@@ -140,4 +140,42 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
     }
+
+  // ==========================================
+    // DASHBOARD KPI CALCULATIONS
+    // ==========================================
+    const kpiCompletion = document.getElementById("kpiCompletion");
+    const kpiFraction = document.getElementById("kpiFraction");
+    const kpiPending = document.getElementById("kpiPending");
+    const kpiReview = document.getElementById("kpiReview");
+
+    // Only run this math if we are actually on the Dashboard page
+    if (kpiCompletion) { 
+        const dashboardQuery = query(collection(db, "gk_assessments"));
+        
+        onSnapshot(dashboardQuery, (snapshot) => {
+            let okCount = 0;
+            let pendingCount = 0;
+            let reviewCount = 0;
+            const TOTAL_CRITERIA = 26; // Total GK requirements
+
+            // Loop through all database records and count the statuses
+            snapshot.forEach((doc) => {
+                const status = doc.data().status;
+                if (status === "OK / Scanned" || status === "Hardcopy On Hand") okCount++;
+                if (status === "Requested") pendingCount++;
+                if (status === "Under Review") reviewCount++;
+            });
+
+            // Calculate the percentage
+            const percentage = Math.round((okCount / TOTAL_CRITERIA) * 100);
+
+            // Push the live numbers to the HTML screen
+            kpiCompletion.innerText = `${percentage}%`;
+            kpiFraction.innerText = `${okCount}/${TOTAL_CRITERIA} Criteria Uploaded`;
+            kpiPending.innerText = pendingCount;
+            kpiReview.innerText = reviewCount;
+        });
+    }
+  
 });
