@@ -173,27 +173,62 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 // ==========================================
-    // MODULE 2: NEW PILLAR DASHBOARD LOGIC
+    // MODULE 2: DASHBOARD PROGRESS BAR LOGIC
     // ==========================================
-    const kpiStructure = document.getElementById("kpiStructure");
-    if (kpiStructure) { 
+    const barStructure = document.getElementById("bar-structure");
+    
+    if (barStructure) { 
         onSnapshot(query(collection(db, "gk_assessments")), (snapshot) => {
-            let counts = { "Structure": 0, "Competency": 0, "Management Systems": 0, "Enabling Policies": 0, "Knowledge Management and Advocacy": 0, "Partnership and Participation": 0 };
+            let counts = { 
+                "Structure": 0, 
+                "Competency": 0, 
+                "Management Systems": 0, 
+                "Enabling Policies": 0, 
+                "Knowledge Management and Advocacy": 0, 
+                "Partnership and Participation": 0 
+            };
+            
+            let totalOk = 0;
+            const TOTAL_CRITERIA = 26;
 
+            // 1. Count the completed items
             snapshot.forEach((doc) => {
                 const data = doc.data();
-                // Only count it if the status means it is completed
                 if (data.status === "OK / Scanned" || data.status === "Hardcopy On Hand") {
                     if (counts[data.pillar] !== undefined) counts[data.pillar]++;
+                    totalOk++;
                 }
             });
 
-            document.getElementById("kpiStructure").innerText = `${counts["Structure"]} MOV`;
-            document.getElementById("kpiCompetency").innerText = `${counts["Competency"]} MOV`;
-            document.getElementById("kpiManagement").innerText = `${counts["Management Systems"]} MOV`;
-            document.getElementById("kpiPolicies").innerText = `${counts["Enabling Policies"]} MOV`;
-            document.getElementById("kpiKnowledge").innerText = `${counts["Knowledge Management and Advocacy"]} MOV`;
-            document.getElementById("kpiPartnership").innerText = `${counts["Partnership and Participation"]} MOV`;
+            // 2. Function to visually update the bars
+            // Note: We are temporarily setting the target for each pillar to 5 to generate the percentage width. 
+            // We can easily adjust these targets later once the exact criteria count per pillar is finalized.
+            const updateBar = (id, textId, count, target) => {
+                const bar = document.getElementById(id);
+                const text = document.getElementById(textId);
+                if (bar && text) {
+                    const percent = Math.min((count / target) * 100, 100);
+                    bar.style.width = `${percent}%`;
+                    text.innerText = `${count} MOV`;
+                }
+            };
+
+            // 3. Execute the visual update for each pillar
+            updateBar("bar-structure", "text-structure", counts["Structure"], 5);
+            updateBar("bar-competency", "text-competency", counts["Competency"], 5);
+            updateBar("bar-management", "text-management", counts["Management Systems"], 5);
+            updateBar("bar-policies", "text-policies", counts["Enabling Policies"], 5);
+            updateBar("bar-knowledge", "text-knowledge", counts["Knowledge Management and Advocacy"], 5);
+            updateBar("bar-partnership", "text-partnership", counts["Partnership and Participation"], 5);
+
+            // 4. Update the Overall Completion fraction at the top
+            const kpiCompletion = document.getElementById("kpiCompletion");
+            const kpiFraction = document.getElementById("kpiFraction");
+            if(kpiCompletion && kpiFraction) {
+                const totalPercent = Math.round((totalOk / TOTAL_CRITERIA) * 100);
+                kpiCompletion.innerText = `${totalPercent}%`;
+                kpiFraction.innerText = `${totalOk}/${TOTAL_CRITERIA} Criteria Uploaded`;
+            }
         });
     }
 
