@@ -23,15 +23,40 @@ document.addEventListener("DOMContentLoaded", () => {
     // ==========================================
     const currentPage = window.location.pathname;
     const isLoginPage = currentPage.includes("login.html");
+    const adminNav = document.getElementById("adminNav");
+    
+    // Define the Master Admins (Add your 2 extra emails here later, separated by commas)
+    const LEAD_ADMIN_EMAILS = [
+        "paness9793@gmail.com"
+        // "second_admin@tarlac.gov.ph", 
+        // "third_admin@tarlac.gov.ph"
+    ]; 
+    
+    // Global variable so the rest of the app knows the user's role
+    let isLeadAdmin = false; 
 
-    // 1. Listen for User Login Status
+    // 1. Listen for User Login Status & Enforce Roles
     onAuthStateChanged(auth, (user) => {
         if (!user && !isLoginPage) {
-            // If they are NOT logged in and try to access the dashboard, kick them to login
+            // Not logged in? Kick to login screen.
             window.location.href = "login.html";
         } else if (user && isLoginPage) {
-            // If they ARE logged in but on the login page, push them to the dashboard
+            // Logged in but on the login page? Push to dashboard.
             window.location.href = "index.html";
+        } else if (user) {
+            // Establish Role: Checks if the logged-in email exists in our Master list
+            isLeadAdmin = LEAD_ADMIN_EMAILS.includes(user.email);
+
+            // ENCODER RESTRICTIONS
+            if (!isLeadAdmin) {
+                // 1. Hide the Admin menu on the sidebar
+                if (adminNav) adminNav.style.display = "none";
+                
+                // 2. If an Encoder tries to type /admin.html into the URL bar, kick them to the dashboard
+                if (currentPage.includes("admin.html")) {
+                    window.location.href = "index.html";
+                }
+            }
         }
     });
 
@@ -45,7 +70,6 @@ document.addEventListener("DOMContentLoaded", () => {
             
             try {
                 await signInWithEmailAndPassword(auth, email, password);
-                // Success! The onAuthStateChanged listener above will auto-redirect them
             } catch (error) {
                 console.error("Login Error:", error);
                 alert("Invalid Email or Password. Please try again.");
@@ -53,7 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // 3. Handle Logout Button (If you add an id="logoutBtn" to any button)
+    // 3. Handle Logout Button
     const logoutBtn = document.getElementById("logoutBtn");
     if (logoutBtn) {
         logoutBtn.addEventListener("click", async (e) => {
@@ -61,7 +85,6 @@ document.addEventListener("DOMContentLoaded", () => {
             await signOut(auth);
         });
     }
-
    // ==========================================
     // MODULE 1: MOV CHECKLIST LOGIC (UPDATED FOR 7 COLUMNS)
     // ==========================================
