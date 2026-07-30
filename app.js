@@ -1,5 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-import { getFirestore, collection, addDoc, doc, deleteDoc, updateDoc, onSnapshot, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, doc, deleteDoc, updateDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+// NEW: Import Authentication Modules
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAJUoe7O-8dXK9WNx2SqWTYkg1y-uFMkjE",
@@ -12,10 +14,54 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const auth = getAuth(app);
+const auth = getAuth(app); // Initialize Authentication
 
 document.addEventListener("DOMContentLoaded", () => {
     
+    // ==========================================
+    // MODULE 0: SECURITY & AUTHENTICATION
+    // ==========================================
+    const currentPage = window.location.pathname;
+    const isLoginPage = currentPage.includes("login.html");
+
+    // 1. Listen for User Login Status
+    onAuthStateChanged(auth, (user) => {
+        if (!user && !isLoginPage) {
+            // If they are NOT logged in and try to access the dashboard, kick them to login
+            window.location.href = "login.html";
+        } else if (user && isLoginPage) {
+            // If they ARE logged in but on the login page, push them to the dashboard
+            window.location.href = "index.html";
+        }
+    });
+
+    // 2. Handle the Login Form Submission
+    const loginForm = document.getElementById("loginForm");
+    if (loginForm) {
+        loginForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const email = document.getElementById("loginEmail").value;
+            const password = document.getElementById("loginPassword").value;
+            
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                // Success! The onAuthStateChanged listener above will auto-redirect them
+            } catch (error) {
+                console.error("Login Error:", error);
+                alert("Invalid Email or Password. Please try again.");
+            }
+        });
+    }
+
+    // 3. Handle Logout Button (If you add an id="logoutBtn" to any button)
+    const logoutBtn = document.getElementById("logoutBtn");
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", async (e) => {
+            e.preventDefault();
+            await signOut(auth);
+        });
+    }
+
     // ==========================================
     // MODULE 1: MOV CHECKLIST LOGIC
     // ==========================================
@@ -65,7 +111,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 currentEditId = null;
             } catch (error) {
                 console.error("Error saving document: ", error);
-                alert("Failed to save record.");
+                alert("Failed to save record. Ensure you are logged in.");
             }
         });
     }
@@ -169,11 +215,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
             snapshot.forEach((documentSnap) => {
                 const data = documentSnap.data();
-                
                 if (data.status === "Requested") {
                     hasPendingItems = true;
                     const row = document.createElement("tr");
-                    
                     let daysPending = 0;
                     if (data.created_at) {
                         const createdDate = data.created_at.toDate();
@@ -181,18 +225,13 @@ document.addEventListener("DOMContentLoaded", () => {
                         const diffTime = Math.abs(today - createdDate);
                         daysPending = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                     }
-
                     row.innerHTML = `
                         <td><strong>${data.criterion || ''}</strong></td>
                         <td>${data.document_name || ''}</td>
                         <td><span class="badge badge-external">${data.opr || ''}</span></td>
                         <td><span style="color: #e67e22; font-weight: bold;">${daysPending} Days</span></td>
                         <td>
-                            <button class="btn-email" 
-                                data-opr="${data.opr || ''}" 
-                                data-crit="${data.criterion || ''}" 
-                                data-doc="${data.document_name || ''}" 
-                                style="background: #3498db; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.85em;">
+                            <button style="background: #3498db; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.85em;">
                                 <i class="fas fa-envelope"></i> Draft Email
                             </button>
                         </td>
@@ -204,103 +243,10 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!hasPendingItems) {
                 trackerTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #27ae60; padding: 20px;"><strong><i class="fas fa-check-circle"></i> All caught up! No pending requests.</strong></td></tr>';
             }
-
-            document.querySelectorAll(".btn-email").forEach(btn => {
-                btn.addEventListener("click", (e) => {
-                    const targetOPR = e.currentTarget.getAttribute("data-opr");
-                    const targetCrit = e.currentTarget.getAttribute("data-crit");
-                    const targetDoc = e.currentTarget.getAttribute("data-doc");
-
-                    const subject = encodeURIComponent(`URGENT: Gawad KALASAG 2026 Requirement - ${targetCrit}`);
-                    const body = encodeURIComponent(
-                        `Good day ${targetOPR} Team,\n\n` +
-                        `We are currently preparing our documents for the Gawad KALASAG 2026 Assessment.\n\n` +
-                        `Could we kindly request a soft copy of the following document to be uploaded or sent to our office at your earliest convenience?\n\n` +
-                        `Criterion: ${targetCrit}\n` +
-                        `Required Document: ${targetDoc}\n\n` +
-                        `Please let us know if you have any questions or require further clarification.\n\n` +
-                        `Thank you,\n` +
-                        `PDRRMO Tarlac`
-                    );
-
-                    window.location.href = `mailto:?subject=${subject}&body=${body}`;
-                });
-            });
         });
     }
 
     // ==========================================
-    // MODULE 4: SHEETS & REPORTS LOGIC
-    // ==========================================
-    const exportCsvBtn = document.getElementById("exportCsvBtn");
-
-    if (exportCsvBtn) {
-        exportCsvBtn.addEventListener("click", async () => {
-            try {
-                // Temporarily change button text so the user knows it's working
-                exportCsvBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating Export...';
-                exportCsvBtn.disabled = true;
-
-                // 1. Fetch all records from Firebase
-                const exportQuery = query(collection(db, "gk_assessments"), orderBy("created_at", "desc"));
-                const querySnapshot = await getDocs(exportQuery);
-
-                if (querySnapshot.empty) {
-                    alert("No data available to export.");
-                    exportCsvBtn.innerHTML = '<i class="fas fa-file-csv"></i> Export Full Database to CSV';
-                    exportCsvBtn.disabled = false;
-                    return;
-                }
-
-                // 2. Prepare the CSV Headers
-                let csvContent = "Criterion,Document Title,OPR,Status,Link / Location,Date Added\n";
-
-                // 3. Loop through every document and format it for the spreadsheet
-                querySnapshot.forEach((docSnap) => {
-                    const data = docSnap.data();
-                    
-                    // We wrap fields in quotes so commas inside titles don't break the columns
-                    const crit = `"${(data.criterion || '').replace(/"/g, '""')}"`;
-                    const title = `"${(data.document_name || '').replace(/"/g, '""')}"`;
-                    const opr = `"${(data.opr || '').replace(/"/g, '""')}"`;
-                    const status = `"${(data.status || '').replace(/"/g, '""')}"`;
-                    const link = `"${(data.file_url || '').replace(/"/g, '""')}"`;
-                    
-                    let dateAdded = '""';
-                    if (data.created_at) {
-                        dateAdded = `"${data.created_at.toDate().toLocaleDateString()}"`;
-                    }
-
-                    // Add the row to our CSV text block
-                    csvContent += `${crit},${title},${opr},${status},${link},${dateAdded}\n`;
-                });
-
-                // 4. Create the downloadable file
-                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-                const linkElement = document.createElement("a");
-                const url = URL.createObjectURL(blob);
-                
-                linkElement.setAttribute("href", url);
-                linkElement.setAttribute("download", "GK_2026_MOV_Tracker.csv"); // This is the file name
-                linkElement.style.visibility = 'hidden';
-                document.body.appendChild(linkElement);
-                linkElement.click();
-                document.body.removeChild(linkElement);
-
-                // Reset button text
-                exportCsvBtn.innerHTML = '<i class="fas fa-file-csv"></i> Export Full Database to CSV';
-                exportCsvBtn.disabled = false;
-
-            } catch (error) {
-                console.error("Error exporting data: ", error);
-                alert("An error occurred while generating the report.");
-                exportCsvBtn.innerHTML = '<i class="fas fa-file-csv"></i> Export Full Database to CSV';
-                exportCsvBtn.disabled = false;
-            }
-        });
-    }
-
-  // ==========================================
     // MODULE 5: ADMIN SETTINGS LOGIC
     // ==========================================
     const oprList = document.getElementById("oprList");
@@ -308,91 +254,65 @@ document.addEventListener("DOMContentLoaded", () => {
     const statusList = document.getElementById("statusList");
     const addStatusForm = document.getElementById("addStatusForm");
 
-    // --- 1. OPR Management ---
     if (oprList && addOprForm) {
-        // Load OPRs from Firebase
         onSnapshot(query(collection(db, "gk_oprs"), orderBy("name")), (snapshot) => {
             oprList.innerHTML = "";
-            if (snapshot.empty) {
-                oprList.innerHTML = '<li><span style="color:#7f8c8d;">No OPRs found. Add one below.</span></li>';
-            }
+            if (snapshot.empty) oprList.innerHTML = '<li><span style="color:#7f8c8d;">No OPRs found. Add one below.</span></li>';
             snapshot.forEach((docSnap) => {
                 const id = docSnap.id;
                 const name = docSnap.data().name;
                 const li = document.createElement("li");
-                li.innerHTML = `
-                    <strong>${name}</strong>
-                    <button class="btn-del-opr" data-id="${id}" style="background: #e74c3c; border: none; color: white; padding: 4px 8px; border-radius: 4px; cursor: pointer;"><i class="fas fa-trash"></i></button>
-                `;
+                li.innerHTML = `<strong>${name}</strong> <button class="btn-del-opr" data-id="${id}" style="background: #e74c3c; border: none; color: white; padding: 4px 8px; border-radius: 4px; cursor: pointer;"><i class="fas fa-trash"></i></button>`;
                 oprList.appendChild(li);
             });
 
-            // Delete OPR Logic
             document.querySelectorAll(".btn-del-opr").forEach(btn => {
                 btn.addEventListener("click", async (e) => {
-                    const docId = e.currentTarget.getAttribute("data-id");
-                    if (confirm("Are you sure you want to delete this OPR?")) {
-                        await deleteDoc(doc(db, "gk_oprs", docId));
-                    }
+                    if (confirm("Are you sure you want to delete this OPR?")) await deleteDoc(doc(db, "gk_oprs", e.currentTarget.getAttribute("data-id")));
                 });
             });
         });
 
-        // Add New OPR Logic
         addOprForm.addEventListener("submit", async (e) => {
             e.preventDefault();
             const input = document.getElementById("newOprInput");
-            const newName = input.value.trim();
-            if (newName) {
-                await addDoc(collection(db, "gk_oprs"), { name: newName });
-                input.value = ""; // Automatically clear the input box
+            if (input.value.trim()) {
+                await addDoc(collection(db, "gk_oprs"), { name: input.value.trim() });
+                input.value = "";
             }
         });
     }
 
-    // --- 2. Status Tag Management ---
     if (statusList && addStatusForm) {
-        // Load Statuses from Firebase
         onSnapshot(query(collection(db, "gk_statuses"), orderBy("name")), (snapshot) => {
             statusList.innerHTML = "";
-            if (snapshot.empty) {
-                statusList.innerHTML = '<li><span style="color:#7f8c8d;">No status tags found. Add one below.</span></li>';
-            }
+            if (snapshot.empty) statusList.innerHTML = '<li><span style="color:#7f8c8d;">No status tags found. Add one below.</span></li>';
             snapshot.forEach((docSnap) => {
                 const id = docSnap.id;
                 const name = docSnap.data().name;
                 const li = document.createElement("li");
-                li.innerHTML = `
-                    <strong>${name}</strong>
-                    <button class="btn-del-status" data-id="${id}" style="background: #e74c3c; border: none; color: white; padding: 4px 8px; border-radius: 4px; cursor: pointer;"><i class="fas fa-trash"></i></button>
-                `;
+                li.innerHTML = `<strong>${name}</strong> <button class="btn-del-status" data-id="${id}" style="background: #e74c3c; border: none; color: white; padding: 4px 8px; border-radius: 4px; cursor: pointer;"><i class="fas fa-trash"></i></button>`;
                 statusList.appendChild(li);
             });
 
-            // Delete Status Logic
             document.querySelectorAll(".btn-del-status").forEach(btn => {
                 btn.addEventListener("click", async (e) => {
-                    const docId = e.currentTarget.getAttribute("data-id");
-                    if (confirm("Are you sure you want to delete this Status Tag?")) {
-                        await deleteDoc(doc(db, "gk_statuses", docId));
-                    }
+                    if (confirm("Are you sure you want to delete this Status Tag?")) await deleteDoc(doc(db, "gk_statuses", e.currentTarget.getAttribute("data-id")));
                 });
             });
         });
 
-        // Add New Status Logic
         addStatusForm.addEventListener("submit", async (e) => {
             e.preventDefault();
             const input = document.getElementById("newStatusInput");
-            const newName = input.value.trim();
-            if (newName) {
-                await addDoc(collection(db, "gk_statuses"), { name: newName });
-                input.value = ""; // Automatically clear the input box
+            if (input.value.trim()) {
+                await addDoc(collection(db, "gk_statuses"), { name: input.value.trim() });
+                input.value = "";
             }
         });
     }
 
-// --- 3. Dynamic Dropdown Population for Checklist Form ---
+    // --- 3. Dynamic Dropdown Population for Checklist Form ---
     const inputOPR = document.getElementById("inputOPR");
     const inputStatus = document.getElementById("inputStatus");
 
