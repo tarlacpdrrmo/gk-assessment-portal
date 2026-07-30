@@ -2,16 +2,17 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebas
 import { getFirestore, collection, addDoc, doc, deleteDoc, updateDoc, onSnapshot, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDSCB9jQIzyn9WxGZ58sLkYJPHCj5oeEKQ",
-  authDomain: "pdrrmo-dashboard.firebaseapp.com",
-  projectId: "pdrrmo-dashboard",
-  storageBucket: "pdrrmo-dashboard.firebasestorage.app",
-  messagingSenderId: "555106842078",
-  appId: "1:555106842078:web:18e95c2e1352db559ad94f"
+  apiKey: "AIzaSyAJUoe7O-8dXK9WNx2SqWTYkg1y-uFMkjE",
+  authDomain: "gk-portal-dev.firebaseapp.com",
+  projectId: "gk-portal-dev",
+  storageBucket: "gk-portal-dev.firebasestorage.app",
+  messagingSenderId: "824670517028",
+  appId: "1:824670517028:web:f369d96b08068a9f8365b1"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
 document.addEventListener("DOMContentLoaded", () => {
     
