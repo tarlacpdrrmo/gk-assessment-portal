@@ -340,6 +340,84 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+
+// ==========================================
+    // MODULE 4: REPORTS & CSV EXPORT LOGIC
+    // ==========================================
+    const exportCsvBtn = document.getElementById("exportCsvBtn");
+
+    if (exportCsvBtn) {
+        exportCsvBtn.addEventListener("click", async () => {
+            try {
+                // Change button text to show it's working
+                const originalText = exportCsvBtn.innerHTML;
+                exportCsvBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating CSV...';
+                exportCsvBtn.disabled = true;
+
+                // 1. Fetch all records from the database
+                const snapshot = await getDocs(query(collection(db, "gk_assessments"), orderBy("pillar", "asc")));
+                
+                if (snapshot.empty) {
+                    alert("No data found to export.");
+                    exportCsvBtn.innerHTML = originalText;
+                    exportCsvBtn.disabled = false;
+                    return;
+                }
+
+                // 2. Setup CSV Headers
+                let csvContent = "Pillar,Criterion,Document Title,OPR,Status,Link / Location\n";
+
+                // 3. Loop through data and format as CSV safely
+                snapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    
+                    // Helper function to escape commas and quotes so the spreadsheet doesn't break
+                    const clean = (str) => {
+                        if (!str) return '""';
+                        return `"${str.toString().replace(/"/g, '""')}"`;
+                    };
+
+                    const row = [
+                        clean(data.pillar),
+                        clean(data.criterion),
+                        clean(data.document_name),
+                        clean(data.opr),
+                        clean(data.status),
+                        clean(data.file_url)
+                    ].join(",");
+                    
+                    csvContent += row + "\n";
+                });
+
+                // 4. Create a downloadable file
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement("a");
+                const url = URL.createObjectURL(blob);
+                
+                // Name the file dynamically based on today's date
+                const today = new Date().toISOString().split('T')[0];
+                link.setAttribute("href", url);
+                link.setAttribute("download", `GK_2026_Database_Export_${today}.csv`);
+                link.style.visibility = 'hidden';
+                
+                // Force the browser to download the file
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                // Restore the button
+                exportCsvBtn.innerHTML = originalText;
+                exportCsvBtn.disabled = false;
+
+            } catch (error) {
+                console.error("Export failed:", error);
+                alert("Failed to export data. Check your connection.");
+                exportCsvBtn.innerHTML = '<i class="fas fa-file-csv"></i> Export Full Database to CSV';
+                exportCsvBtn.disabled = false;
+            }
+        });
+    }
+  
     // ==========================================
     // MODULE 5: ADMIN SETTINGS LOGIC
     // ==========================================
