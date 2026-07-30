@@ -287,50 +287,59 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // ==========================================
-    // MODULE 3: OPR TRACKER LOGIC
+    // MODULE 3: OPR REQUEST TRACKER LOGIC
     // ==========================================
+    // Ensure your tracker.html has a <tbody> with id="trackerTableBody"
     const trackerTableBody = document.getElementById("trackerTableBody");
 
     if (trackerTableBody) {
-        const trackerQuery = query(collection(db, "gk_assessments"), orderBy("created_at", "desc"));
-        
-        onSnapshot(trackerQuery, (snapshot) => {
+        const q = query(collection(db, "gk_assessments"), orderBy("created_at", "desc"));
+        onSnapshot(q, (snapshot) => {
             trackerTableBody.innerHTML = "";
-            let hasPendingItems = false;
+            let hasRequests = false;
 
-            snapshot.forEach((documentSnap) => {
-                const data = documentSnap.data();
+            snapshot.forEach((docSnap) => {
+                const data = docSnap.data();
+                
+                // Only pull items marked as "Requested"
                 if (data.status === "Requested") {
-                    hasPendingItems = true;
+                    hasRequests = true;
                     const row = document.createElement("tr");
-                    let daysPending = 0;
+                    
+                    // Calculate how many days it has been pending
+                    let daysPending = 1;
                     if (data.created_at) {
                         const createdDate = data.created_at.toDate();
                         const today = new Date();
                         const diffTime = Math.abs(today - createdDate);
-                        daysPending = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                        daysPending = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
                     }
+
+                    // Automatically draft the email subject and body
+                    const emailSubject = encodeURIComponent(`URGENT: Gawad KALASAG 2026 Requirement - ${data.criterion}`);
+                    const emailBody = encodeURIComponent(`Good day,\n\nThis is an automated request from the PDRRMO Gawad KALASAG Portal.\n\nWe are urgently requesting the following document for our 2026 Assessment:\n\nCriterion: ${data.criterion}\nDocument Required: ${data.document_name}\n\nPlease provide this document to the PDRRMO as soon as possible so we can update our system.\n\nThank you,\nLead Admin, PDRRMO Tarlac`);
+                    
                     row.innerHTML = `
                         <td><strong>${data.criterion || ''}</strong></td>
-                        <td>${data.document_name || ''}</td>
-                        <td><span class="badge badge-external">${data.opr || ''}</span></td>
-                        <td><span style="color: #e67e22; font-weight: bold;">${daysPending} Days</span></td>
+                        <td style="color: #7f8c8d; font-size: 0.9em;">${data.document_name || ''}</td>
+                        <td><span class="badge badge-internal" style="background: #fbeee0; color: #e67e22; padding: 4px 8px; border-radius: 4px;">${data.opr || ''}</span></td>
+                        <td style="color: #e67e22; font-weight: bold;">${daysPending} Days</td>
                         <td>
-                            <button style="background: #3498db; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.85em;">
+                            <a href="mailto:?subject=${emailSubject}&body=${emailBody}" class="btn-email" style="background: #3498db; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 0.85em; display: inline-block; transition: 0.3s;">
                                 <i class="fas fa-envelope"></i> Draft Email
-                            </button>
+                            </a>
                         </td>
                     `;
                     trackerTableBody.appendChild(row);
                 }
             });
 
-            if (!hasPendingItems) {
-                trackerTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #27ae60; padding: 20px;"><strong><i class="fas fa-check-circle"></i> All caught up! No pending requests.</strong></td></tr>';
+            // If there are no requests, show a success message
+            if (!hasRequests) {
+                trackerTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #27ae60; padding: 20px;"><strong><i class="fas fa-check-circle"></i> All caught up! No pending OPR requests at this time.</strong></td></tr>';
             }
         });
     }
-
     // ==========================================
     // MODULE 5: ADMIN SETTINGS LOGIC
     // ==========================================
