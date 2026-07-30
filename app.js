@@ -21,32 +21,56 @@ document.addEventListener("DOMContentLoaded", () => {
     const closeModalBtn = document.getElementById("closeModalBtn");
     const recordForm = document.getElementById("addRecordForm");
     const tableBody = document.getElementById("checklistTableBody");
+    const modalTitle = document.querySelector(".modal-header h3");
 
-    // Modal Controls
-    if (openModalBtn) openModalBtn.addEventListener("click", () => modal.style.display = "flex");
-    if (closeModalBtn) closeModalBtn.addEventListener("click", () => modal.style.display = "none");
+    let currentEditId = null; // Tracks if we are editing or adding
 
-    // SAVE NEW RECORD
+    // OPEN MODAL (For Adding)
+    if (openModalBtn) {
+        openModalBtn.addEventListener("click", () => {
+            currentEditId = null;
+            recordForm.reset();
+            modalTitle.innerHTML = '<i class="fas fa-file-medical"></i> Add New Assessment MOV';
+            modal.style.display = "flex";
+        });
+    }
+
+    // CLOSE MODAL
+    if (closeModalBtn) {
+        closeModalBtn.addEventListener("click", () => modal.style.display = "none");
+    }
+
+    // FORM SUBMIT (Handles both Add and Edit)
     if (recordForm) {
         recordForm.addEventListener("submit", async (e) => {
             e.preventDefault();
             
-            const newRecord = {
+            const recordData = {
                 criterion: document.getElementById("inputCriterion").value,
                 document_name: document.getElementById("inputTitle").value,
                 opr: document.getElementById("inputOPR").value,
                 status: document.getElementById("inputStatus").value,
                 file_url: document.getElementById("inputFileUrl").value || "N/A",
-                created_at: new Date()
+                updated_at: new Date()
             };
 
             try {
-                await addDoc(collection(db, "gk_assessments"), newRecord);
-                alert("Record successfully saved to Firebase!");
+                if (currentEditId) {
+                    // UPDATE EXISTING RECORD
+                    await updateDoc(doc(db, "gk_assessments", currentEditId), recordData);
+                    alert("Record successfully updated!");
+                } else {
+                    // ADD NEW RECORD
+                    recordData.created_at = new Date();
+                    await addDoc(collection(db, "gk_assessments"), recordData);
+                    alert("New record successfully saved!");
+                }
+                
                 recordForm.reset();
                 modal.style.display = "none";
+                currentEditId = null;
             } catch (error) {
-                console.error("Error writing document: ", error);
+                console.error("Error saving document: ", error);
                 alert("Failed to save record.");
             }
         });
@@ -75,14 +99,37 @@ document.addEventListener("DOMContentLoaded", () => {
                     <td><span class="badge badge-internal">${data.opr || ''}</span></td>
                     <td><span class="status-tag status-ok">${data.status || ''}</span></td>
                     <td>${data.file_url.startsWith('http') ? `<a href="${data.file_url}" target="_blank" class="file-link">View Link</a>` : data.file_url}</td>
-                    <td>
-                        <button class="btn-delete" data-id="${id}" style="background: #e74c3c; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8em;"><i class="fas fa-trash"></i> Delete</button>
+                    <td style="display: flex; gap: 5px;">
+                        <button class="btn-edit" data-id="${id}" style="background: #f39c12; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8em;"><i class="fas fa-edit"></i></button>
+                        <button class="btn-delete" data-id="${id}" style="background: #e74c3c; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8em;"><i class="fas fa-trash"></i></button>
                     </td>
                 `;
                 tableBody.appendChild(row);
             });
 
-            // Attach Click Listeners for Delete Buttons
+            // Attach Click Listeners for EDIT Buttons
+            document.querySelectorAll(".btn-edit").forEach(btn => {
+                btn.addEventListener("click", async (e) => {
+                    const docId = e.currentTarget.getAttribute("data-id");
+                    currentEditId = docId; // Set the tracker
+                    
+                    // Grab the row's data from the table HTML directly to fill the form instantly
+                    const row = e.currentTarget.closest("tr");
+                    document.getElementById("inputCriterion").value = row.cells[0].innerText.trim();
+                    document.getElementById("inputTitle").value = row.cells[1].innerText.trim();
+                    document.getElementById("inputOPR").value = row.cells[2].innerText.trim();
+                    document.getElementById("inputStatus").value = row.cells[3].innerText.trim();
+                    
+                    let linkText = row.cells[4].innerText.trim();
+                    if(linkText === "View Link") linkText = row.cells[4].querySelector('a').href;
+                    document.getElementById("inputFileUrl").value = linkText;
+
+                    modalTitle.innerHTML = '<i class="fas fa-edit"></i> Edit Assessment MOV';
+                    modal.style.display = "flex"; // Open the modal
+                });
+            });
+
+            // Attach Click Listeners for DELETE Buttons
             document.querySelectorAll(".btn-delete").forEach(btn => {
                 btn.addEventListener("click", async (e) => {
                     const docId = e.currentTarget.getAttribute("data-id");
