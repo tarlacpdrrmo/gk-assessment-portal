@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | GK 2026 Portal</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #ecf0f1; margin: 0; }
+        .login-card { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }
+        .login-card h2 { color: #2c3e50; margin-bottom: 5px; }
+        .login-card p { color: #7f8c8d; margin-bottom: 20px; font-size: 0.9em; }
+        .form-group { margin-bottom: 15px; text-align: left; }
+        .form-group label { display: block; font-weight: bold; margin-bottom: 5px; color: #34495e; font-size: 0.85em; }
+        .form-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .btn-login { background: #3498db; color: white; border: none; padding: 12px; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 1em; margin-top: 10px; }
+        .btn-login:hover { background: #2980b9; }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <i class="fas fa-shield-alt" style="font-size: 3em; color: #3498db;"></i>
+        <h2>GK 2026 Portal</h2>
+        <p>PDRRMO Tarlac Authorized Access</p>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" id="loginEmail" required placeholder="admin@tarlac.gov.ph">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="loginPassword" required placeholder="••••••••">
+            </div>
+            <button type="submit" class="btn-login">Sign In</button>
+        </form>
+    </div>
+
+    <!-- Make sure this points to your newly updated staging app.js -->
+    <script type="module" src="app.js"></script>
+</body>
+</html>
