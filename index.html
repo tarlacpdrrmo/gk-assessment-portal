@@ -81,79 +81,101 @@
 </div>
         </section>
 
-        <!-- PILLAR STATUS & ACTION ITEMS -->
-        <section class="bottom-grid">
+   <!-- PILLAR STATUS & ACTION ITEMS -->
+        <section class="bottom-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; margin-top: 20px;">
             
-            <!-- Pillar Colors representing your Excel Dashboard -->
-            <div class="kpi-card" style="grid-column: span 2; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
-            <h3 style="margin-top:0; color:#2c3e50; border-bottom: 2px solid #ecf0f1; padding-bottom: 10px;">Pillar Progress Overview</h3>
-            
-            <!-- Structure -->
-            <div style="margin-top: 15px;">
-                <div style="display: flex; justify-content: space-between; font-size: 0.85em; font-weight: bold; margin-bottom: 5px; color: #34495e;">
-                    <span>I. Structure</span>
-                    <span id="text-structure">0</span>
+            <!-- LEFT SIDE: Pillar Colors representing your Excel Dashboard -->
+            <div class="kpi-card" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                <h3 style="margin-top:0; color:#2c3e50; border-bottom: 2px solid #ecf0f1; padding-bottom: 10px;">Pillar Progress Overview</h3>
+                
+                <!-- Structure -->
+                <div style="margin-top: 15px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.85em; font-weight: bold; margin-bottom: 5px; color: #34495e;">
+                        <span>I. Structure</span>
+                        <span id="text-structure">0</span>
+                    </div>
+                    <div style="background: #ecf0f1; border-radius: 10px; height: 10px; width: 100%; overflow: hidden;">
+                        <div id="bar-structure" style="background: #27ae60; height: 100%; width: 0%; transition: width 0.5s ease;"></div>
+                    </div>
                 </div>
-                <div style="background: #ecf0f1; border-radius: 10px; height: 10px; width: 100%; overflow: hidden;">
-                    <div id="bar-structure" style="background: #27ae60; height: 100%; width: 0%; transition: width 0.5s ease;"></div>
+                
+                <!-- Competency -->
+                <div style="margin-top: 15px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.85em; font-weight: bold; margin-bottom: 5px; color: #34495e;">
+                        <span>II. Competency</span>
+                        <span id="text-competency">0</span>
+                    </div>
+                    <div style="background: #ecf0f1; border-radius: 10px; height: 10px; width: 100%; overflow: hidden;">
+                        <div id="bar-competency" style="background: #3498db; height: 100%; width: 0%; transition: width 0.5s ease;"></div>
+                    </div>
                 </div>
-            </div>
-            
-            <!-- Competency -->
-            <div style="margin-top: 15px;">
-                <div style="display: flex; justify-content: space-between; font-size: 0.85em; font-weight: bold; margin-bottom: 5px; color: #34495e;">
-                    <span>II. Competency</span>
-                    <span id="text-competency">0</span>
+
+                <!-- Management Systems -->
+                <div style="margin-top: 15px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.85em; font-weight: bold; margin-bottom: 5px; color: #34495e;">
+                        <span>III. Management Systems</span>
+                        <span id="text-management">0</span>
+                    </div>
+                    <div style="background: #ecf0f1; border-radius: 10px; height: 10px; width: 100%; overflow: hidden;">
+                        <div id="bar-management" style="background: #e67e22; height: 100%; width: 0%; transition: width 0.5s ease;"></div>
+                    </div>
                 </div>
-                <div style="background: #ecf0f1; border-radius: 10px; height: 10px; width: 100%; overflow: hidden;">
-                    <div id="bar-competency" style="background: #3498db; height: 100%; width: 0%; transition: width 0.5s ease;"></div>
+
+                <!-- Enabling Policies -->
+                <div style="margin-top: 15px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.85em; font-weight: bold; margin-bottom: 5px; color: #34495e;">
+                        <span>IV. Enabling Policies</span>
+                        <span id="text-policies">0</span>
+                    </div>
+                    <div style="background: #ecf0f1; border-radius: 10px; height: 10px; width: 100%; overflow: hidden;">
+                        <div id="bar-policies" style="background: #9b59b6; height: 100%; width: 0%; transition: width 0.5s ease;"></div>
+                    </div>
+                </div>
+
+                <!-- Knowledge Mgmt -->
+                <div style="margin-top: 15px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.85em; font-weight: bold; margin-bottom: 5px; color: #34495e;">
+                        <span>V. Knowledge Mgt & Advocacy</span>
+                        <span id="text-knowledge">0</span>
+                    </div>
+                    <div style="background: #ecf0f1; border-radius: 10px; height: 10px; width: 100%; overflow: hidden;">
+                        <div id="bar-knowledge" style="background: #1abc9c; height: 100%; width: 0%; transition: width 0.5s ease;"></div>
+                    </div>
+                </div>
+
+                <!-- Partnership -->
+                <div style="margin-top: 15px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.85em; font-weight: bold; margin-bottom: 5px; color: #34495e;">
+                        <span>VI. Partnership & Participation</span>
+                        <span id="text-partnership">0</span>
+                    </div>
+                    <div style="background: #ecf0f1; border-radius: 10px; height: 10px; width: 100%; overflow: hidden;">
+                        <div id="bar-partnership" style="background: #e74c3c; height: 100%; width: 0%; transition: width 0.5s ease;"></div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Management Systems -->
-            <div style="margin-top: 15px;">
-                <div style="display: flex; justify-content: space-between; font-size: 0.85em; font-weight: bold; margin-bottom: 5px; color: #34495e;">
-                    <span>III. Management Systems</span>
-                    <span id="text-management">0</span>
-                </div>
-                <div style="background: #ecf0f1; border-radius: 10px; height: 10px; width: 100%; overflow: hidden;">
-                    <div id="bar-management" style="background: #e67e22; height: 100%; width: 0%; transition: width 0.5s ease;"></div>
-                </div>
-            </div>
-
-            <!-- Enabling Policies -->
-            <div style="margin-top: 15px;">
-                <div style="display: flex; justify-content: space-between; font-size: 0.85em; font-weight: bold; margin-bottom: 5px; color: #34495e;">
-                    <span>IV. Enabling Policies</span>
-                    <span id="text-policies">0</span>
-                </div>
-                <div style="background: #ecf0f1; border-radius: 10px; height: 10px; width: 100%; overflow: hidden;">
-                    <div id="bar-policies" style="background: #9b59b6; height: 100%; width: 0%; transition: width 0.5s ease;"></div>
-                </div>
-            </div>
-
-            <!-- Knowledge Mgmt -->
-            <div style="margin-top: 15px;">
-                <div style="display: flex; justify-content: space-between; font-size: 0.85em; font-weight: bold; margin-bottom: 5px; color: #34495e;">
-                    <span>V. Knowledge Mgt & Advocacy</span>
-                    <span id="text-knowledge">0</span>
-                </div>
-                <div style="background: #ecf0f1; border-radius: 10px; height: 10px; width: 100%; overflow: hidden;">
-                    <div id="bar-knowledge" style="background: #1abc9c; height: 100%; width: 0%; transition: width 0.5s ease;"></div>
+            <!-- RIGHT SIDE: Priority OPR Requests Needed -->
+            <div class="kpi-card" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                <h3 style="margin-top:0; color:#2c3e50; border-bottom: 2px solid #ecf0f1; padding-bottom: 10px;">Priority OPR Requests Needed</h3>
+                
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; text-align: left; margin-top: 10px;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid #ecf0f1;">
+                                <th style="padding: 10px; color: #2c3e50; font-size: 0.9em;">Criterion</th>
+                                <th style="padding: 10px; color: #2c3e50; font-size: 0.9em;">Required Document</th>
+                                <th style="padding: 10px; color: #2c3e50; font-size: 0.9em;">OPR Target</th>
+                                <th style="padding: 10px; color: #2c3e50; font-size: 0.9em;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="priorityOprTableBody">
+                            <!-- Data will be dynamically injected here -->
+                            <tr><td colspan="4" style="padding: 10px; text-align: center; color: #7f8c8d;">Loading priority requests...</td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-
-            <!-- Partnership -->
-            <div style="margin-top: 15px;">
-                <div style="display: flex; justify-content: space-between; font-size: 0.85em; font-weight: bold; margin-bottom: 5px; color: #34495e;">
-                    <span>VI. Partnership & Participation</span>
-                    <span id="text-partnership">0</span>
-                </div>
-                <div style="background: #ecf0f1; border-radius: 10px; height: 10px; width: 100%; overflow: hidden;">
-                    <div id="bar-partnership" style="background: #e74c3c; height: 100%; width: 0%; transition: width 0.5s ease;"></div>
-                </div>
-            </div>
-        </div>
 
         </section>
     </main>
