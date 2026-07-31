@@ -619,22 +619,37 @@ if (openModalBtn && modal && closeModalBtn) {
     });
 }
 
-// 2. Cascading Dropdown Dictionary with Full Titles (Pillar I)
+// 2. Cascading Dropdown Dictionary with Categories (Pillar I)
 const criteriaMap = {
     "Structure": [
-        { id: "1.1", title: "Establishment of LDRRMC" },
-        { id: "1.2", title: "Convene the LDRRMC quarterly or as necessary" },
-        { id: "1.3", title: "Organization of DRRMC" },
-        { id: "1.4", title: "Secretariat and Executive Arm of LDRRMC" },
-        { id: "1.5", title: "Creation of LDRRM Office" },
-        { id: "1.6", title: "LDRRMO Staffing/ Personnel Complement" },
-        { id: "1.7", title: "Local DRRM Officer" },
-        { id: "1.8", title: "Establishment of Prov/City/Mun DRRM Ops Center" },
-        { id: "1.9", title: "Organization and Competence of local ERTs" }
+        {
+            groupName: "A. Established and Functional LDRRMC",
+            indicators: [
+                { id: "1.1", title: "Establishment of LDRRMC" },
+                { id: "1.2", title: "Convene the LDRRMC quarterly or as necessary" },
+                { id: "1.3", title: "Organization of DRRMC" }
+            ]
+        },
+        {
+            groupName: "B. Creation of Local DRRM Office",
+            indicators: [
+                { id: "1.4", title: "Secretariat and Executive Arm of LDRRMC" },
+                { id: "1.5", title: "Creation of LDRRM Office" },
+                { id: "1.6", title: "LDRRMO Staffing/ Personnel Complement" },
+                { id: "1.7", title: "Local DRRM Officer" }
+            ]
+        },
+        {
+            groupName: "C. Established Local DRRM Operations Center",
+            indicators: [
+                { id: "1.8", title: "Establishment of Prov/City/Mun DRRM Ops Center" },
+                { id: "1.9", title: "Organization and Competence of local ERTs" }
+            ]
+        }
     ]
 };
 
-// 3. Dropdown Event Listener
+// 3. Dropdown Event Listener with <optgroup> creation
 if (pillarSelect && criterionSelect) {
     pillarSelect.addEventListener("change", function() {
         const selectedPillar = this.value;
@@ -642,16 +657,21 @@ if (pillarSelect && criterionSelect) {
         criterionSelect.innerHTML = '<option value="">Select Criterion...</option>';
         
         if (criteriaMap[selectedPillar]) {
-            criteriaMap[selectedPillar].forEach(crit => {
-                const option = document.createElement("option");
+            criteriaMap[selectedPillar].forEach(category => {
+                // Create the bold category header (optgroup)
+                const optGroup = document.createElement("optgroup");
+                optGroup.label = category.groupName;
                 
-                // IMPORTANT: The 'value' stays exactly "1.1" to protect the math formulas
-                option.value = crit.id; 
+                // Add the selectable indicators under this header
+                category.indicators.forEach(crit => {
+                    const option = document.createElement("option");
+                    option.value = crit.id; // Math protection!
+                    option.textContent = `${crit.id} - ${crit.title}`;
+                    optGroup.appendChild(option);
+                });
                 
-                // The 'textContent' displays the beautiful title for the encoders
-                option.textContent = `${crit.id} - ${crit.title}`;
-                
-                criterionSelect.appendChild(option);
+                // Append the entire group to the dropdown
+                criterionSelect.appendChild(optGroup);
             });
         }
     });
