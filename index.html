@@ -81,23 +81,39 @@
 </div>
         </section>
 
-   <!-- PILLAR STATUS & ACTION ITEMS -->
-        <section class="bottom-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; margin-top: 20px;">
-            
-            <!-- LEFT SIDE: Pillar Colors representing your Excel Dashboard -->
-            <div class="kpi-card" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
-                <h3 style="margin-top:0; color:#2c3e50; border-bottom: 2px solid #ecf0f1; padding-bottom: 10px;">Pillar Progress Overview</h3>
-                
-                <!-- Structure -->
-                <div style="margin-top: 15px;">
-                    <div style="display: flex; justify-content: space-between; font-size: 0.85em; font-weight: bold; margin-bottom: 5px; color: #34495e;">
-                        <span>I. Structure</span>
-                        <span id="text-structure">0</span>
-                    </div>
-                    <div style="background: #ecf0f1; border-radius: 10px; height: 10px; width: 100%; overflow: hidden;">
-                        <div id="bar-structure" style="background: #27ae60; height: 100%; width: 0%; transition: width 0.5s ease;"></div>
-                    </div>
-                </div>
+   <!-- PILLAR 1 ACCORDION -->
+<div class="pillar-accordion" style="margin-bottom: 10px;">
+    <!-- The Clickable Header -->
+    <div id="header-pillar-1" style="cursor: pointer; background: #f8f9fa; padding: 12px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #ddd;">
+        <strong style="font-size: 1.1em;">I. Structure <span id="pillar-1-overall-pct" style="color: #2980b9; margin-left: 10px;">(0%)</span></strong>
+        <i class="fas fa-chevron-down" style="color: #7f8c8d;"></i>
+    </div>
+    
+    <!-- The Hidden Details Panel -->
+    <div id="content-pillar-1" style="display: none; padding: 15px 20px; border-left: 4px solid #2980b9; background: #ffffff; border-bottom: 1px solid #eee; border-right: 1px solid #eee;">
+        
+        <h5 style="color: #2c3e50; font-weight: bold; margin-bottom: 5px;">A. Established and Functional LDRRMC</h5>
+        <ul style="list-style: none; padding-left: 15px; font-size: 0.9em; margin-bottom: 15px;">
+            <li style="margin-bottom: 3px;">1.1 Establishment of LDRRMC: <strong id="pct-1-1">0%</strong></li>
+            <li style="margin-bottom: 3px;">1.2 Convene the LDRRMC quarterly or as necessary: <strong id="pct-1-2">0%</strong></li>
+            <li style="margin-bottom: 3px;">1.3 Organization of DRRMC: <strong id="pct-1-3">0%</strong></li>
+        </ul>
+
+        <h5 style="color: #2c3e50; font-weight: bold; margin-bottom: 5px;">B. Creation of Local DRRM Office</h5>
+        <ul style="list-style: none; padding-left: 15px; font-size: 0.9em; margin-bottom: 15px;">
+            <li style="margin-bottom: 3px;">1.4 Secretariat and Executive Arm of LDRRMC: <strong id="pct-1-4">0%</strong></li>
+            <li style="margin-bottom: 3px;">1.5 Creation of LDRRM Office: <strong id="pct-1-5">0%</strong></li>
+            <li style="margin-bottom: 3px;">1.6 LDRRMO Staffing/ Personnel Complement: <strong id="pct-1-6">0%</strong></li>
+            <li style="margin-bottom: 3px;">1.7 Local DRRM Officer: <strong id="pct-1-7">0%</strong></li>
+        </ul>
+
+        <h5 style="color: #2c3e50; font-weight: bold; margin-bottom: 5px;">C. Established Local DRRM Operations Center</h5>
+        <ul style="list-style: none; padding-left: 15px; font-size: 0.9em; margin-bottom: 5px;">
+            <li style="margin-bottom: 3px;">1.8 Establishment of Prov/City/Mun DRRM Operations Center: <strong id="pct-1-8">0%</strong></li>
+            <li style="margin-bottom: 3px;">1.9 Organization and Competence of local ERTs: <strong id="pct-1-9">0%</strong></li>
+        </ul>
+    </div>
+</div>
                 
                 <!-- Competency -->
                 <div style="margin-top: 15px;">
