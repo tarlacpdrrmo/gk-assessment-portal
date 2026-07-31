@@ -45,6 +45,51 @@
         <!-- DATA TABLE -->
         <section class="panel">
             <h3>Year 2026 - Document Tracker</h3>
+            
+        <!-- ADVANCED FILTER BAR -->
+            <div style="display: flex; gap: 15px; margin-bottom: 15px; background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #ddd; align-items: flex-end; flex-wrap: wrap;">
+                
+                <div style="flex: 1; min-width: 150px;">
+                    <label style="display: block; font-size: 0.85em; font-weight: bold; margin-bottom: 5px; color: #2c3e50;">Filter by Pillar</label>
+                    <select id="filterPillar" style="width: 100%; padding: 8px; border: 1px solid #bdc3c7; border-radius: 4px;">
+                        <option value="All">All Pillars</option>
+                        <option value="Structure">I. Structure</option>
+                        <option value="Competency">II. Competency</option>
+                        <option value="Management Systems">III. Management Systems</option>
+                        <option value="Enabling Policies">IV. Enabling Policies</option>
+                        <option value="Knowledge Management and Advocacy">V. Knowledge Management & Advocacy</option>
+                        <option value="Partnership and Participation">VI. Partnership & Participation</option>
+                    </select>
+                </div>
+                
+                <div style="flex: 1; min-width: 150px;">
+                    <label style="display: block; font-size: 0.85em; font-weight: bold; margin-bottom: 5px; color: #2c3e50;">Filter by Criterion</label>
+                    <select id="filterCriterion" style="width: 100%; padding: 8px; border: 1px solid #bdc3c7; border-radius: 4px;">
+                        <option value="All">All Criteria</option>
+                    </select>
+                </div>
+                
+                <div style="flex: 1; min-width: 150px;">
+                    <label style="display: block; font-size: 0.85em; font-weight: bold; margin-bottom: 5px; color: #2c3e50;">Filter by OPR</label>
+                    <select id="filterOPR" style="width: 100%; padding: 8px; border: 1px solid #bdc3c7; border-radius: 4px;">
+                        <option value="All">All OPRs</option>
+                    </select>
+                </div>
+                
+                <div style="flex: 1; min-width: 150px;">
+                    <label style="display: block; font-size: 0.85em; font-weight: bold; margin-bottom: 5px; color: #2c3e50;">Filter by Status</label>
+                    <select id="filterStatus" style="width: 100%; padding: 8px; border: 1px solid #bdc3c7; border-radius: 4px;">
+                        <option value="All">All Statuses</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <button id="resetFiltersBtn" style="background: #e74c3c; color: white; border: none; padding: 9px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.3s;">
+                        <i class="fas fa-undo"></i> Reset
+                    </button>
+                </div>
+            </div>
+            
             <table class="data-table">
               <thead>
     <tr>
