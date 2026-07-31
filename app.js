@@ -619,10 +619,18 @@ if (openModalBtn && modal && closeModalBtn) {
     });
 }
 
-// 2. Cascading Dropdown Dictionary (Pillar I)
+// 2. Cascading Dropdown Dictionary with Full Titles (Pillar I)
 const criteriaMap = {
     "Structure": [
-        "1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9"
+        { id: "1.1", title: "Establishment of LDRRMC" },
+        { id: "1.2", title: "Convene the LDRRMC quarterly or as necessary" },
+        { id: "1.3", title: "Organization of DRRMC" },
+        { id: "1.4", title: "Secretariat and Executive Arm of LDRRMC" },
+        { id: "1.5", title: "Creation of LDRRM Office" },
+        { id: "1.6", title: "LDRRMO Staffing/ Personnel Complement" },
+        { id: "1.7", title: "Local DRRM Officer" },
+        { id: "1.8", title: "Establishment of Prov/City/Mun DRRM Ops Center" },
+        { id: "1.9", title: "Organization and Competence of local ERTs" }
     ]
 };
 
@@ -636,8 +644,13 @@ if (pillarSelect && criterionSelect) {
         if (criteriaMap[selectedPillar]) {
             criteriaMap[selectedPillar].forEach(crit => {
                 const option = document.createElement("option");
-                option.value = crit;
-                option.textContent = `Indicator ${crit}`;
+                
+                // IMPORTANT: The 'value' stays exactly "1.1" to protect the math formulas
+                option.value = crit.id; 
+                
+                // The 'textContent' displays the beautiful title for the encoders
+                option.textContent = `${crit.id} - ${crit.title}`;
+                
                 criterionSelect.appendChild(option);
             });
         }
