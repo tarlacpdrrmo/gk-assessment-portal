@@ -1,24 +1,23 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
 import { getFirestore, collection, onSnapshot, query, orderBy, addDoc, deleteDoc, doc, updateDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
-// NEW: Import Authentication Modules
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAJUoe7O-8dXK9WNx2SqWTYkg1y-uFMkjE",
-  authDomain: "gk-portal-dev.firebaseapp.com",
-  projectId: "gk-portal-dev",
-  storageBucket: "gk-portal-dev.firebasestorage.app",
-  messagingSenderId: "824670517028",
-  appId: "1:824670517028:web:f369d96b08068a9f8365b1"
+    apiKey: "AIzaSyAJUoe7O-8dXK9WNx2SqWTYkg1y-uFMkjE",
+    authDomain: "gk-portal-dev.firebaseapp.com",
+    projectId: "gk-portal-dev",
+    storageBucket: "gk-portal-dev.firebasestorage.app",
+    messagingSenderId: "824670517028",
+    appId: "1:824670517028:web:f369d96b08068a9f8365b1"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const auth = getAuth(app); // Initialize Authentication
+const auth = getAuth(app); 
 
 document.addEventListener("DOMContentLoaded", () => {
     
-   // ==========================================
+    // ==========================================
     // MODULE 0: SECURITY & AUTHENTICATION
     // ==========================================
     const currentPage = window.location.pathname;
@@ -26,34 +25,25 @@ document.addEventListener("DOMContentLoaded", () => {
     const adminNav = document.getElementById("adminNav");
     const userRoleDisplay = document.getElementById("userRoleDisplay");
     
-    // Define the Master Admins
-    const LEAD_ADMIN_EMAILS = [
-        "paness9793@gmail.com"
-    ]; 
+    const LEAD_ADMIN_EMAILS = ["paness9793@gmail.com"]; 
     
-    // Define Team Nicknames / Display Names
     const TEAM_NAMES = {
-        "paness9793@gmail.com": "Admin", // Change this to your actual name/nickname!
-        "encoder@tarlac.gov.ph": "Juan (PSWDO)", // Example staff 1
-        "another@tarlac.gov.ph": "Maria (PHRMO)" // Example staff 2
+        "paness9793@gmail.com": "Admin", 
+        "encoder@tarlac.gov.ph": "Juan (PSWDO)", 
+        "another@tarlac.gov.ph": "Maria (PHRMO)" 
     };
 
     let isLeadAdmin = false; 
 
-    // 1. Listen for User Login Status & Enforce Roles
     onAuthStateChanged(auth, (user) => {
         if (!user && !isLoginPage) {
             window.location.href = "login.html";
         } else if (user && isLoginPage) {
             window.location.href = "index.html";
         } else if (user) {
-            // Establish Role
             isLeadAdmin = LEAD_ADMIN_EMAILS.includes(user.email);
-
-            // Look up the user's nickname, or default to their email address if not on the list
             const displayName = TEAM_NAMES[user.email] || user.email.split('@')[0];
 
-            // Update the top-right profile text dynamically
             if (userRoleDisplay) {
                 if (isLeadAdmin) {
                     userRoleDisplay.innerHTML = `<i class="fas fa-user-shield"></i> ${displayName}`;
@@ -62,7 +52,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
 
-            // ENCODER RESTRICTIONS
             if (!isLeadAdmin) {
                 if (adminNav) adminNav.style.display = "none";
                 if (currentPage.includes("admin.html")) {
@@ -73,7 +62,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // 2. Handle the Login Form Submission
     const loginForm = document.getElementById("loginForm");
     if (loginForm) {
         loginForm.addEventListener("submit", async (e) => {
@@ -90,7 +78,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // 3. Handle Logout Button
     const logoutBtn = document.getElementById("logoutBtn");
     if (logoutBtn) {
         logoutBtn.addEventListener("click", async (e) => {
@@ -98,8 +85,9 @@ document.addEventListener("DOMContentLoaded", () => {
             await signOut(auth);
         });
     }
-   // ==========================================
-    // MODULE 1: MOV CHECKLIST LOGIC (UPDATED FOR 7 COLUMNS)
+
+    // ==========================================
+    // MODULE 1: MOV CHECKLIST & CASCADING DROPDOWNS
     // ==========================================
     const modal = document.getElementById("recordModal");
     const openModalBtn = document.getElementById("openModalBtn");
@@ -107,6 +95,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const recordForm = document.getElementById("addRecordForm");
     const tableBody = document.getElementById("checklistTableBody");
     const modalTitle = document.querySelector(".modal-header h3");
+    
+    const pillarSelect = document.getElementById("inputPillar");
+    const criterionSelect = document.getElementById("inputCriterion");
 
     let currentEditId = null;
 
@@ -114,17 +105,75 @@ document.addEventListener("DOMContentLoaded", () => {
         openModalBtn.addEventListener("click", () => {
             currentEditId = null;
             recordForm.reset();
+            if(criterionSelect) criterionSelect.innerHTML = '<option value="">Select a Pillar first...</option>';
             if (modalTitle) modalTitle.innerHTML = '<i class="fas fa-file-medical"></i> Add New Assessment MOV';
             modal.style.display = "flex";
         });
     }
 
-    if (closeModalBtn) closeModalBtn.addEventListener("click", () => modal.style.display = "none");
+    if (closeModalBtn) {
+        closeModalBtn.addEventListener("click", () => {
+            modal.style.display = "none";
+            recordForm.reset();
+            if(criterionSelect) criterionSelect.innerHTML = '<option value="">Select a Pillar first...</option>';
+        });
+    }
+
+    // --- NEW: CASCADING DROPDOWN DICTIONARY ---
+    const criteriaMap = {
+        "Structure": [
+            {
+                groupName: "A. Established and Functional LDRRMC",
+                indicators: [
+                    { id: "1.1", title: "Establishment of LDRRMC" },
+                    { id: "1.2", title: "Convene the LDRRMC quarterly or as necessary" },
+                    { id: "1.3", title: "Organization of DRRMC" }
+                ]
+            },
+            {
+                groupName: "B. Creation of Local DRRM Office",
+                indicators: [
+                    { id: "1.4", title: "Secretariat and Executive Arm of LDRRMC" },
+                    { id: "1.5", title: "Creation of LDRRM Office" },
+                    { id: "1.6", title: "LDRRMO Staffing/ Personnel Complement" },
+                    { id: "1.7", title: "Local DRRM Officer" }
+                ]
+            },
+            {
+                groupName: "C. Established Local DRRM Operations Center",
+                indicators: [
+                    { id: "1.8", title: "Establishment of Prov/City/Mun DRRM Ops Center" },
+                    { id: "1.9", title: "Organization and Competence of local ERTs" }
+                ]
+            }
+        ]
+    };
+
+    if (pillarSelect && criterionSelect) {
+        pillarSelect.addEventListener("change", function() {
+            const selectedPillar = this.value;
+            criterionSelect.innerHTML = '<option value="">Select Criterion...</option>';
+            
+            if (criteriaMap[selectedPillar]) {
+                criteriaMap[selectedPillar].forEach(category => {
+                    const optGroup = document.createElement("optgroup");
+                    optGroup.label = category.groupName;
+                    
+                    category.indicators.forEach(crit => {
+                        const option = document.createElement("option");
+                        option.value = crit.id; 
+                        option.textContent = `${crit.id} - ${crit.title}`;
+                        optGroup.appendChild(option);
+                    });
+                    criterionSelect.appendChild(optGroup);
+                });
+            }
+        });
+    }
 
     if (recordForm) {
         recordForm.addEventListener("submit", async (e) => {
             e.preventDefault();
-            // FIXED: Added Pillar to the save package
             const recordData = {
                 pillar: document.getElementById("inputPillar").value,
                 criterion: document.getElementById("inputCriterion").value,
@@ -167,7 +216,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 const id = documentSnap.id;
                 const row = document.createElement("tr");
                 
-                // FIXED: Rendering all 7 columns perfectly
                 row.innerHTML = `
                     <td style="color: #7f8c8d; font-size: 0.9em;">${data.pillar || ''}</td>
                     <td><strong>${data.criterion || ''}</strong></td>
@@ -183,7 +231,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 tableBody.appendChild(row);
             });
 
-            // FIXED: Shifted the column numbers by +1 so the Edit button grabs the correct data
             document.querySelectorAll(".btn-edit").forEach(btn => {
                 btn.addEventListener("click", async (e) => {
                     const docId = e.currentTarget.getAttribute("data-id");
@@ -191,7 +238,12 @@ document.addEventListener("DOMContentLoaded", () => {
                     const row = e.currentTarget.closest("tr");
                     
                     document.getElementById("inputPillar").value = row.cells[0].innerText.trim();
-                    document.getElementById("inputCriterion").value = row.cells[1].innerText.trim();
+                    
+                    // Trigger pillar change to populate criterion dropdown
+                    const event = new Event('change');
+                    document.getElementById("inputPillar").dispatchEvent(event);
+                    setTimeout(() => { document.getElementById("inputCriterion").value = row.cells[1].innerText.trim(); }, 100);
+
                     document.getElementById("inputTitle").value = row.cells[2].innerText.trim();
                     document.getElementById("inputOPR").value = row.cells[3].innerText.trim();
                     document.getElementById("inputStatus").value = row.cells[4].innerText.trim();
@@ -216,8 +268,8 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-// ==========================================
-    // MODULE 2: UNIFIED DASHBOARD LOGIC (ALL 6 PILLARS)
+    // ==========================================
+    // MODULE 2: UNIFIED DASHBOARD LOGIC (STRICT OPTION A)
     // ==========================================
     const kpiCompletion = document.getElementById("kpiCompletion"); 
     
@@ -240,9 +292,9 @@ document.addEventListener("DOMContentLoaded", () => {
         setupAccordion('header-pillar-5', 'content-pillar-5'); 
         setupAccordion('header-pillar-6', 'content-pillar-6'); 
 
-// TARGETS (Updated based on Lead Admin Data Dictionary - Strictly Separate Uploads)
-const PILLAR_1_TARGETS = { "1.1": 4, "1.2": 8, "1.3": 19, "1.4": 2, "1.5": 4, "1.6": 4, "1.7": 4, "1.8": 8, "1.9": 7 };
-const totalPillar1Target = 60;
+        // TARGETS (Updated based on Lead Admin Data Dictionary)
+        const PILLAR_1_TARGETS = { "1.1": 4, "1.2": 8, "1.3": 19, "1.4": 2, "1.5": 4, "1.6": 4, "1.7": 4, "1.8": 8, "1.9": 7 };
+        const totalPillar1Target = 60;
         const PILLAR_2_TARGETS = { "2.1": 6, "2.2": 4, "2.3": 2, "2.4": 4, "2.5": 2, "2.6": 4, "2.7": 3, "2.8": 4, "2.9": 6, "2.10": 10, "2.11": 5, "2.12": 6 };
         const totalPillar2Target = 56;
         const PILLAR_3_TARGETS = { "3.1": 4, "3.2": 2, "3.3": 4 };
@@ -262,16 +314,18 @@ const totalPillar1Target = 60;
             let p5Counts = { "5.1": 0, "5.2": 0 }; 
             let p6Counts = { "6.1": 0, "6.2": 0 }; 
             
-            let totalOk = 0;
             let pendingCount = 0;
             let reviewCount = 0;
             let requestedItems = []; 
             const TOTAL_CRITERIA = 29; 
+            
+            // NEW: Option A Strict Tracker Counter
+            let fullyCompletedCriteria = 0;
 
             snapshot.forEach((docSnap) => {
                 const data = docSnap.data();
+                // Only count documents towards math if they are OK or On Hand
                 if (data.status === "OK / Scanned" || data.status === "Hardcopy On Hand") {
-                    totalOk++;
                     if (data.pillar === "Structure" && p1Counts[data.criterion] !== undefined) p1Counts[data.criterion]++;
                     if (data.pillar === "Competency" && p2Counts[data.criterion] !== undefined) p2Counts[data.criterion]++;
                     if (data.pillar === "Management Systems" && p3Counts[data.criterion] !== undefined) p3Counts[data.criterion]++;
@@ -292,12 +346,19 @@ const totalPillar1Target = 60;
                     let uploaded = countsObj[crit];
                     let target = targetsObj[crit];
                     totalUploaded += Math.min(uploaded, target); 
+                    
                     let pct = Math.round((uploaded / target) * 100);
                     if (pct > 100) pct = 100;
+                    
+                    // STRICT TRACKER MATH: Does it equal exactly 100?
+                    if (pct === 100) {
+                        fullyCompletedCriteria++;
+                    }
+
                     let pctElement = document.getElementById(`pct-${crit.replace('.', '-')}`);
                     if (pctElement) {
                         pctElement.innerText = `${pct}%`;
-                        pctElement.style.color = pct >= 100 ? '#27ae60' : (pct > 0 ? '#e67e22' : '#e74c3c');
+                        pctElement.style.color = pct === 100 ? '#27ae60' : (pct > 0 ? '#e67e22' : '#e74c3c');
                     }
                 }
                 let overallPct = Math.round((totalUploaded / overallTarget) * 100);
@@ -312,7 +373,7 @@ const totalPillar1Target = 60;
             processPillarMath(p5Counts, PILLAR_5_TARGETS, "5", totalPillar5Target); 
             processPillarMath(p6Counts, PILLAR_6_TARGETS, "6", totalPillar6Target); 
 
-            // KPIs
+            // KPIs - Now using fullyCompletedCriteria!
             const kpiFraction = document.getElementById("kpiFraction");
             const kpiPending = document.getElementById("kpiPending");
             const kpiReview = document.getElementById("kpiReview");
@@ -320,16 +381,18 @@ const totalPillar1Target = 60;
             const kpiScoreText = document.getElementById("kpiScoreText");
 
             if (kpiCompletion && kpiFraction) {
-                const totalPercent = Math.round((totalOk / TOTAL_CRITERIA) * 100);
+                const totalPercent = Math.round((fullyCompletedCriteria / TOTAL_CRITERIA) * 100);
                 kpiCompletion.innerText = `${totalPercent}%`;
-                kpiFraction.innerText = `${totalOk}/${TOTAL_CRITERIA} Criteria Uploaded`;
+                kpiFraction.innerText = `${fullyCompletedCriteria}/${TOTAL_CRITERIA} Criteria Fully Satisfied`;
             }
+            
             if (kpiPending) kpiPending.innerText = pendingCount;
             if (kpiReview) kpiReview.innerText = reviewCount;
 
+            // Simple Estimated Score based on strict criteria completion
             if (kpiScore && kpiScoreText) {
                 const maxScore = 3.00;
-                const currentScore = ((totalOk / TOTAL_CRITERIA) * maxScore).toFixed(2);
+                const currentScore = ((fullyCompletedCriteria / TOTAL_CRITERIA) * maxScore).toFixed(2);
                 kpiScore.innerText = currentScore;
                 if (currentScore >= 2.50) {
                     kpiScoreText.innerText = "Beyond Compliant (Projected)";
@@ -368,10 +431,10 @@ const totalPillar1Target = 60;
             }
         });
     }
+
     // ==========================================
     // MODULE 3: OPR REQUEST TRACKER LOGIC
     // ==========================================
-    // Ensure your tracker.html has a <tbody> with id="trackerTableBody"
     const trackerTableBody = document.getElementById("trackerTableBody");
 
     if (trackerTableBody) {
@@ -382,13 +445,10 @@ const totalPillar1Target = 60;
 
             snapshot.forEach((docSnap) => {
                 const data = docSnap.data();
-                
-                // Only pull items marked as "Requested"
                 if (data.status === "Requested") {
                     hasRequests = true;
                     const row = document.createElement("tr");
                     
-                    // Calculate how many days it has been pending
                     let daysPending = 1;
                     if (data.created_at) {
                         const createdDate = data.created_at.toDate();
@@ -397,7 +457,6 @@ const totalPillar1Target = 60;
                         daysPending = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
                     }
 
-                    // Automatically draft the email subject and body
                     const emailSubject = encodeURIComponent(`URGENT: Gawad KALASAG 2026 Requirement - ${data.criterion}`);
                     const emailBody = encodeURIComponent(`Good day,\n\nThis is an automated request from the PDRRMO Gawad KALASAG Portal.\n\nWe are urgently requesting the following document for our 2026 Assessment:\n\nCriterion: ${data.criterion}\nDocument Required: ${data.document_name}\n\nPlease provide this document to the PDRRMO as soon as possible so we can update our system.\n\nThank you,\nLead Admin, PDRRMO Tarlac`);
                     
@@ -416,14 +475,13 @@ const totalPillar1Target = 60;
                 }
             });
 
-            // If there are no requests, show a success message
             if (!hasRequests) {
                 trackerTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #27ae60; padding: 20px;"><strong><i class="fas fa-check-circle"></i> All caught up! No pending OPR requests at this time.</strong></td></tr>';
             }
         });
     }
 
-// ==========================================
+    // ==========================================
     // MODULE 4: REPORTS & CSV EXPORT LOGIC
     // ==========================================
     const exportCsvBtn = document.getElementById("exportCsvBtn");
@@ -431,12 +489,10 @@ const totalPillar1Target = 60;
     if (exportCsvBtn) {
         exportCsvBtn.addEventListener("click", async () => {
             try {
-                // Change button text to show it's working
                 const originalText = exportCsvBtn.innerHTML;
                 exportCsvBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating CSV...';
                 exportCsvBtn.disabled = true;
 
-                // 1. Fetch all records from the database
                 const snapshot = await getDocs(query(collection(db, "gk_assessments"), orderBy("pillar", "asc")));
                 
                 if (snapshot.empty) {
@@ -446,14 +502,10 @@ const totalPillar1Target = 60;
                     return;
                 }
 
-                // 2. Setup CSV Headers
                 let csvContent = "Pillar,Criterion,Document Title,OPR,Status,Link / Location\n";
 
-                // 3. Loop through data and format as CSV safely
                 snapshot.forEach((docSnap) => {
                     const data = docSnap.data();
-                    
-                    // Helper function to escape commas and quotes so the spreadsheet doesn't break
                     const clean = (str) => {
                         if (!str) return '""';
                         return `"${str.toString().replace(/"/g, '""')}"`;
@@ -471,23 +523,19 @@ const totalPillar1Target = 60;
                     csvContent += row + "\n";
                 });
 
-                // 4. Create a downloadable file
                 const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
                 const link = document.createElement("a");
                 const url = URL.createObjectURL(blob);
                 
-                // Name the file dynamically based on today's date
                 const today = new Date().toISOString().split('T')[0];
                 link.setAttribute("href", url);
                 link.setAttribute("download", `GK_2026_Database_Export_${today}.csv`);
                 link.style.visibility = 'hidden';
                 
-                // Force the browser to download the file
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
 
-                // Restore the button
                 exportCsvBtn.innerHTML = originalText;
                 exportCsvBtn.disabled = false;
 
@@ -566,7 +614,6 @@ const totalPillar1Target = 60;
         });
     }
 
-    // --- 3. Dynamic Dropdown Population for Checklist Form ---
     const inputOPR = document.getElementById("inputOPR");
     const inputStatus = document.getElementById("inputStatus");
 
@@ -594,237 +641,3 @@ const totalPillar1Target = 60;
         });
     }
 });
-
-// ==========================================
-// CHECKLIST MODAL & CASCADING DROPDOWNS
-// ==========================================
-const openModalBtn = document.getElementById("openModalBtn");
-const closeModalBtn = document.getElementById("closeModalBtn");
-const modal = document.getElementById("recordModal");
-const pillarSelect = document.getElementById("inputPillar");
-const criterionSelect = document.getElementById("inputCriterion");
-
-// 1. Open / Close Modal Logic
-if (openModalBtn && modal && closeModalBtn) {
-    openModalBtn.addEventListener("click", () => {
-        modal.style.display = "flex";
-    });
-    
-    closeModalBtn.addEventListener("click", () => {
-        modal.style.display = "none";
-        document.getElementById("addRecordForm").reset(); // Clear form
-        if(criterionSelect) {
-            criterionSelect.innerHTML = '<option value="">Select a Pillar first...</option>';
-        }
-    });
-}
-
-// 2. Cascading Dropdown Dictionary with Categories (Pillar I)
-const criteriaMap = {
-    "Structure": [
-        {
-            groupName: "A. Established and Functional LDRRMC",
-            indicators: [
-                { id: "1.1", title: "Establishment of LDRRMC" },
-                { id: "1.2", title: "Convene the LDRRMC quarterly or as necessary" },
-                { id: "1.3", title: "Organization of DRRMC" }
-            ]
-        },
-        {
-            groupName: "B. Creation of Local DRRM Office",
-            indicators: [
-                { id: "1.4", title: "Secretariat and Executive Arm of LDRRMC" },
-                { id: "1.5", title: "Creation of LDRRM Office" },
-                { id: "1.6", title: "LDRRMO Staffing/ Personnel Complement" },
-                { id: "1.7", title: "Local DRRM Officer" }
-            ]
-        },
-        {
-            groupName: "C. Established Local DRRM Operations Center",
-            indicators: [
-                { id: "1.8", title: "Establishment of Prov/City/Mun DRRM Ops Center" },
-                { id: "1.9", title: "Organization and Competence of local ERTs" }
-            ]
-        }
-    ]
-};
-
-// 3. Dropdown Event Listener with <optgroup> creation
-if (pillarSelect && criterionSelect) {
-    pillarSelect.addEventListener("change", function() {
-        const selectedPillar = this.value;
-        
-        criterionSelect.innerHTML = '<option value="">Select Criterion...</option>';
-        
-        if (criteriaMap[selectedPillar]) {
-            criteriaMap[selectedPillar].forEach(category => {
-                // Create the bold category header (optgroup)
-                const optGroup = document.createElement("optgroup");
-                optGroup.label = category.groupName;
-                
-                // Add the selectable indicators under this header
-                category.indicators.forEach(crit => {
-                    const option = document.createElement("option");
-                    option.value = crit.id; // Math protection!
-                    option.textContent = `${crit.id} - ${crit.title}`;
-                    optGroup.appendChild(option);
-                });
-                
-                // Append the entire group to the dropdown
-                criterionSelect.appendChild(optGroup);
-            });
-        }
-    });
-}
-
-// ==========================================
-// PART 1: STRICT DASHBOARD MATH ENGINE
-// ==========================================
-
-// 1. The Data Dictionary (Locked-in targets for Pillar I)
-const CRITERIA_TARGETS = {
-    "1.1": 4, 
-    "1.2": 8, 
-    "1.3": 19, 
-    "1.4": 2, 
-    "1.5": 4, 
-    "1.6": 4, 
-    "1.7": 4, 
-    "1.8": 8, 
-    "1.9": 7
-};
-
-// Total criteria count for Gawad KALASAG 
-const TOTAL_CRITERIA = 29; 
-
-// 2. Simulated Database (Change these to test your dashboard Math!)
-let currentUploads = {
-    "1.1": 2, // 50%
-    "1.2": 2, 
-    "1.3": 0, 
-    "1.4": 2, // 100% Fully satisfied!
-    "1.5": 0, 
-    "1.6": 0, 
-    "1.7": 0, 
-    "1.8": 0, 
-    "1.9": 0
-};
-
-// 3. The Math Function
-function updateDashboardMath() {
-    let fullyCompletedCriteria = 0;
-
-    for (const [criterion, target] of Object.entries(CRITERIA_TARGETS)) {
-        let uploaded = currentUploads[criterion] || 0;
-        let percent = Math.min((uploaded / target) * 100, 100);
-
-        let uiElementId = `pct-${criterion.replace('.', '-')}`; 
-        let uiElement = document.getElementById(uiElementId);
-        
-        if (uiElement) {
-            if (percent === 0) uiElement.style.color = "#e74c3c"; // Red
-            else if (percent < 100) uiElement.style.color = "#e67e22"; // Orange
-            else uiElement.style.color = "#27ae60"; // Green
-            
-            uiElement.textContent = `${Math.round(percent)}%`;
-        }
-
-        // OPTION A STRICT LOGIC: Only count it towards the top KPI if exactly 100%
-        if (percent === 100) {
-            fullyCompletedCriteria++;
-        }
-    }
-
-    // 4. Update the Top KPI Cards
-    let overallPercent = Math.round((fullyCompletedCriteria / TOTAL_CRITERIA) * 100);
-    let kpiCompletion = document.getElementById("kpiCompletion");
-    let kpiFraction = document.getElementById("kpiFraction");
-
-    if (kpiCompletion && kpiFraction) {
-        kpiCompletion.textContent = `${overallPercent}%`;
-        kpiFraction.textContent = `${fullyCompletedCriteria}/${TOTAL_CRITERIA} Criteria Fully Satisfied`;
-    }
-}
-
-// Run the math when the page loads
-document.addEventListener("DOMContentLoaded", updateDashboardMath);
-
-
-// ==========================================
-// PART 2: CHECKLIST MODAL & CASCADING DROPDOWNS
-// ==========================================
-const openModalBtn = document.getElementById("openModalBtn");
-const closeModalBtn = document.getElementById("closeModalBtn");
-const modal = document.getElementById("recordModal");
-const pillarSelect = document.getElementById("inputPillar");
-const criterionSelect = document.getElementById("inputCriterion");
-
-// 1. Open / Close Modal Logic
-if (openModalBtn && modal && closeModalBtn) {
-    openModalBtn.addEventListener("click", () => {
-        modal.style.display = "flex";
-    });
-    
-    closeModalBtn.addEventListener("click", () => {
-        modal.style.display = "none";
-        document.getElementById("addRecordForm").reset();
-        if(criterionSelect) {
-            criterionSelect.innerHTML = '<option value="">Select a Pillar first...</option>';
-        }
-    });
-}
-
-// 2. Cascading Dropdown Dictionary with Categories (Pillar I)
-const criteriaMap = {
-    "Structure": [
-        {
-            groupName: "A. Established and Functional LDRRMC",
-            indicators: [
-                { id: "1.1", title: "Establishment of LDRRMC" },
-                { id: "1.2", title: "Convene the LDRRMC quarterly or as necessary" },
-                { id: "1.3", title: "Organization of DRRMC" }
-            ]
-        },
-        {
-            groupName: "B. Creation of Local DRRM Office",
-            indicators: [
-                { id: "1.4", title: "Secretariat and Executive Arm of LDRRMC" },
-                { id: "1.5", title: "Creation of LDRRM Office" },
-                { id: "1.6", title: "LDRRMO Staffing/ Personnel Complement" },
-                { id: "1.7", title: "Local DRRM Officer" }
-            ]
-        },
-        {
-            groupName: "C. Established Local DRRM Operations Center",
-            indicators: [
-                { id: "1.8", title: "Establishment of Prov/City/Mun DRRM Ops Center" },
-                { id: "1.9", title: "Organization and Competence of local ERTs" }
-            ]
-        }
-    ]
-};
-
-// 3. Dropdown Event Listener with <optgroup> creation
-if (pillarSelect && criterionSelect) {
-    pillarSelect.addEventListener("change", function() {
-        const selectedPillar = this.value;
-        
-        criterionSelect.innerHTML = '<option value="">Select Criterion...</option>';
-        
-        if (criteriaMap[selectedPillar]) {
-            criteriaMap[selectedPillar].forEach(category => {
-                const optGroup = document.createElement("optgroup");
-                optGroup.label = category.groupName;
-                
-                category.indicators.forEach(crit => {
-                    const option = document.createElement("option");
-                    option.value = crit.id; 
-                    option.textContent = `${crit.id} - ${crit.title}`;
-                    optGroup.appendChild(option);
-                });
-                
-                criterionSelect.appendChild(optGroup);
-            });
-        }
-    });
-}
