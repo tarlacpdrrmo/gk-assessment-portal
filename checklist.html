@@ -67,61 +67,69 @@
         </section>
     </main>
 
-    <!-- REAL DATA INPUT MODAL (POP-UP FORM) -->
-    <div id="recordModal" class="modal-overlay" style="display: none;">
-        <div class="modal-card">
-            <div class="modal-header">
-                <h3><i class="fas fa-file-medical"></i> Add New Assessment MOV</h3>
-                <span id="closeModalBtn" class="close-btn">&times;</span>
+    <!-- UNIFIED ADD/EDIT RECORD MODAL -->
+    <div id="recordModal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000;">
+        <div class="modal-content" style="background: white; padding: 25px; border-radius: 8px; width: 100%; max-width: 500px;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px;">
+                <h3 style="margin: 0; color: #2c3e50;"><i class="fas fa-file-medical"></i> Add Assessment MOV</h3>
+                <button id="closeModalBtn" style="background: none; border: none; font-size: 1.5em; cursor: pointer; color: #7f8c8d;">&times;</button>
             </div>
-            <form id="addRecordForm" class="modal-body">
-                <div class="form-group">
-                    <div>
-                    <label style="font-weight: bold; font-size: 0.9em; color: #333;">Assessment Pillar</label>
-                    <select id="inputPillar" required style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;">
-                        <option value="">Select Pillar...</option>
-                        <option value="Structure">1. Structure</option>
-                        <option value="Competency">2. Competency</option>
-                        <option value="Management Systems">3. Management Systems</option>
-                        <option value="Enabling Policies">4. Enabling Policies</option>
-                        <option value="Knowledge Management and Advocacy">5. Knowledge Management & Advocacy</option>
-                        <option value="Partnership and Participation">6. Partnership & Participation</option>
-                    </select>
+            
+            <form id="addRecordForm" style="display: flex; flex-direction: column; gap: 15px;">
+                <!-- CASCADING DROPDOWNS: Pillar & Criterion -->
+                <div style="display: flex; gap: 15px;">
+                    <div style="flex: 1;">
+                        <label style="font-weight: bold; font-size: 0.9em; color: #333;">Assessment Pillar</label>
+                        <select id="inputPillar" required style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;">
+                            <option value="">Select Pillar...</option>
+                            <option value="Structure">I. Structure</option>
+                            <!-- We will add Pillars II-VI later -->
+                        </select>
+                    </div>
+                    <div style="flex: 1;">
+                        <label style="font-weight: bold; font-size: 0.9em; color: #333;">Criterion</label>
+                        <select id="inputCriterion" required style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;">
+                            <option value="">Select a Pillar first...</option>
+                        </select>
+                    </div>
                 </div>
-                    <label>Criterion No. (e.g., 1.1, 1.6, 2.8):</label>
-                    <input type="text" id="inputCriterion" placeholder="e.g. 1.1" required>
+
+                <div>
+                    <label style="font-weight: bold; font-size: 0.9em; color: #333;">Document Title / Description</label>
+                    <input type="text" id="inputTitle" placeholder="e.g. Executive Order No. 34" required style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;">
                 </div>
-                <div class="form-group">
-                    <label>Document Title / Description:</label>
-                    <input type="text" id="inputTitle" placeholder="e.g. Executive Order No. 34 - PDRRMC Composition" required>
+
+                <div style="display: flex; gap: 15px;">
+                    <div style="flex: 1;">
+                        <label style="font-weight: bold; font-size: 0.9em; color: #333;">Assigned OPR</label>
+                        <select id="inputOPR" required style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;">
+                            <option value="PDRRMO">PDRRMO (Internal)</option>
+                            <option value="PSWDO">PSWDO</option>
+                            <option value="PHRMO">PHRMO</option>
+                            <option value="PGSO">PGSO</option>
+                            <option value="PEPO">PEPO</option>
+                            <option value="ACCOUNTING">Accounting Office</option>
+                        </select>
+                    </div>
+                    <div style="flex: 1;">
+                        <label style="font-weight: bold; font-size: 0.9em; color: #333;">Document Status</label>
+                        <select id="inputStatus" required style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;">
+                            <option value="OK / Scanned">OK / Scanned</option>
+                            <option value="Requested">Requested (Pending External)</option>
+                            <option value="Hardcopy On Hand">Hardcopy On Hand</option>
+                            <option value="Under Review">Under Review</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>Assigned OPR (Department):</label>
-                    <select id="inputOPR" required>
-                        <option value="PDRRMO">PDRRMO (Internal)</option>
-                        <option value="PSWDO">PSWDO</option>
-                        <option value="PHRMO">PHRMO</option>
-                        <option value="PGSO">PGSO</option>
-                        <option value="PEPO">PEPO</option>
-                        <option value="ACCOUNTING">Accounting Office</option>
-                    </select>
+
+                <div>
+                    <label style="font-weight: bold; font-size: 0.9em; color: #333;">Google Drive File Link or Location</label>
+                    <input type="text" id="inputFileUrl" placeholder="https://drive.google.com/... or Cabinet A" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;">
                 </div>
-                <div class="form-group">
-                    <label>Document Status:</label>
-                    <select id="inputStatus" required>
-                        <option value="OK / Scanned">OK / Scanned</option>
-                        <option value="Requested">Requested (Pending External)</option>
-                        <option value="Hardcopy On Hand">Hardcopy On Hand</option>
-                        <option value="Under Review">Under Review</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Google Drive File Link or Physical File Location:</label>
-                    <input type="text" id="inputFileUrl" placeholder="https://drive.google.com/... or Cabinet A, Shelf 2">
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn-primary" style="background-color: #27ae60; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; width: 100%;">Save to Database</button>
-                </div>
+
+                <button type="submit" style="background: #27ae60; color: white; border: none; padding: 12px; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 1em;">
+                    Save Record
+                </button>
             </form>
         </div>
     </div>
