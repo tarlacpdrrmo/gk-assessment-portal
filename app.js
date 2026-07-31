@@ -643,7 +643,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ==========================================
-    // MODULE 6: TABLE FILTERING ENGINE
+    // MODULE 6: TABLE FILTERING ENGINE (FIXED)
     // ==========================================
     const filterPillar = document.getElementById("filterPillar");
     const filterCriterion = document.getElementById("filterCriterion");
@@ -651,6 +651,36 @@ document.addEventListener("DOMContentLoaded", () => {
     const filterStatus = document.getElementById("filterStatus");
     const resetFiltersBtn = document.getElementById("resetFiltersBtn");
     const checklistTableBodyFilter = document.getElementById("checklistTableBody");
+
+    // We define a standalone dictionary here to prevent scope errors!
+    const filterCriteriaMap = {
+        "Structure": [
+            {
+                groupName: "A. Established and Functional LDRRMC",
+                indicators: [
+                    { id: "1.1", title: "Establishment of LDRRMC" },
+                    { id: "1.2", title: "Convene the LDRRMC quarterly or as necessary" },
+                    { id: "1.3", title: "Organization of DRRMC" }
+                ]
+            },
+            {
+                groupName: "B. Creation of Local DRRM Office",
+                indicators: [
+                    { id: "1.4", title: "Secretariat and Executive Arm of LDRRMC" },
+                    { id: "1.5", title: "Creation of LDRRM Office" },
+                    { id: "1.6", title: "LDRRMO Staffing/ Personnel Complement" },
+                    { id: "1.7", title: "Local DRRM Officer" }
+                ]
+            },
+            {
+                groupName: "C. Established Local DRRM Operations Center",
+                indicators: [
+                    { id: "1.8", title: "Establishment of Prov/City/Mun DRRM Ops Center" },
+                    { id: "1.9", title: "Organization and Competence of local ERTs" }
+                ]
+            }
+        ]
+    };
 
     if (filterPillar && filterCriterion && filterOPR && filterStatus) {
         
@@ -670,8 +700,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const selected = filterPillar.value;
             filterCriterion.innerHTML = '<option value="All">All Criteria</option>';
             
-            if (selected !== "All" && criteriaMap[selected]) {
-                criteriaMap[selected].forEach(category => {
+            if (selected !== "All" && filterCriteriaMap[selected]) {
+                filterCriteriaMap[selected].forEach(category => {
                     const optGroup = document.createElement("optgroup");
                     optGroup.label = category.groupName;
                     category.indicators.forEach(crit => {
@@ -706,9 +736,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 const matchStatus = (sVal === "All" || rowStatus === sVal);
 
                 if (matchPillar && matchCriterion && matchOPR && matchStatus) {
-                    row.style.display = "";
+                    row.style.display = ""; // Show
                 } else {
-                    row.style.display = "none";
+                    row.style.display = "none"; // Hide
                 }
             });
         };
