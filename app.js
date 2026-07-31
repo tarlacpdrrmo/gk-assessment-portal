@@ -240,9 +240,9 @@ document.addEventListener("DOMContentLoaded", () => {
         setupAccordion('header-pillar-5', 'content-pillar-5'); 
         setupAccordion('header-pillar-6', 'content-pillar-6'); 
 
-        // TARGETS
-        const PILLAR_1_TARGETS = { "1.1": 4, "1.2": 4, "1.3": 2, "1.4": 2, "1.5": 4, "1.6": 4, "1.7": 5, "1.8": 8, "1.9": 7 };
-        const totalPillar1Target = 40;
+// TARGETS (Updated based on Lead Admin Data Dictionary - Strictly Separate Uploads)
+const PILLAR_1_TARGETS = { "1.1": 4, "1.2": 8, "1.3": 19, "1.4": 2, "1.5": 4, "1.6": 4, "1.7": 4, "1.8": 8, "1.9": 7 };
+const totalPillar1Target = 60;
         const PILLAR_2_TARGETS = { "2.1": 6, "2.2": 4, "2.3": 2, "2.4": 4, "2.5": 2, "2.6": 4, "2.7": 3, "2.8": 4, "2.9": 6, "2.10": 10, "2.11": 5, "2.12": 6 };
         const totalPillar2Target = 56;
         const PILLAR_3_TARGETS = { "3.1": 4, "3.2": 2, "3.3": 4 };
@@ -594,3 +594,50 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+
+// ==========================================
+// UPLOAD MODAL & CASCADING DROPDOWN LOGIC
+// ==========================================
+const openModalBtn = document.getElementById("openAddModalBtn");
+const closeModalBtn = document.getElementById("closeModalBtn");
+const modal = document.getElementById("addMovModal");
+const pillarSelect = document.getElementById("mov-pillar");
+const criterionSelect = document.getElementById("mov-criterion");
+
+// 1. Open / Close Modal Logic
+if (openModalBtn && modal && closeModalBtn) {
+    openModalBtn.addEventListener("click", () => {
+        modal.style.display = "flex";
+    });
+    
+    closeModalBtn.addEventListener("click", () => {
+        modal.style.display = "none";
+        document.getElementById("addMovForm").reset(); // Clear form on close
+        criterionSelect.innerHTML = '<option value="">Select a Pillar first...</option>';
+    });
+}
+
+// 2. Cascading Dropdown Dictionary
+const criteriaMap = {
+    "Structure": [
+        "1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9"
+    ]
+};
+
+// 3. Dropdown Event Listener
+if (pillarSelect && criterionSelect) {
+    pillarSelect.addEventListener("change", function() {
+        const selectedPillar = this.value;
+        
+        criterionSelect.innerHTML = '<option value="">Select Indicator...</option>';
+        
+        if (criteriaMap[selectedPillar]) {
+            criteriaMap[selectedPillar].forEach(crit => {
+                const option = document.createElement("option");
+                option.value = crit;
+                option.textContent = `Indicator ${crit}`;
+                criterionSelect.appendChild(option);
+            });
+        }
+    });
+}
