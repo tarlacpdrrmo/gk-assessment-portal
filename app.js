@@ -217,29 +217,37 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 // ==========================================
-    // MODULE 2: UNIFIED DASHBOARD LOGIC & PILLAR 1 ACCORDION
+    // MODULE 2: UNIFIED DASHBOARD LOGIC & ACCORDIONS (PILLARS 1 & 2)
     // ==========================================
     const kpiCompletion = document.getElementById("kpiCompletion"); 
     
     if (kpiCompletion) { 
-        // --- 1. Make the Accordion Clickable ---
-        const headerPillar1 = document.getElementById('header-pillar-1');
-        const contentPillar1 = document.getElementById('content-pillar-1');
-        if (headerPillar1 && contentPillar1) {
-            headerPillar1.addEventListener('click', () => {
-                const isHidden = contentPillar1.style.display === 'none';
-                contentPillar1.style.display = isHidden ? 'block' : 'none';
-                headerPillar1.querySelector('i').className = isHidden ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
-            });
-        }
+        // --- 1. Make the Accordions Clickable ---
+        const setupAccordion = (headerId, contentId) => {
+            const header = document.getElementById(headerId);
+            const content = document.getElementById(contentId);
+            if (header && content) {
+                header.addEventListener('click', () => {
+                    const isHidden = content.style.display === 'none';
+                    content.style.display = isHidden ? 'block' : 'none';
+                    header.querySelector('i').className = isHidden ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
+                });
+            }
+        };
+        setupAccordion('header-pillar-1', 'content-pillar-1');
+        setupAccordion('header-pillar-2', 'content-pillar-2'); // Added Pillar 2
 
-        // --- 2. PILLAR 1 TARGETS (From Toolkit Analysis) ---
+        // --- 2. SPECIFIC PILLAR TARGETS (From Toolkit Analysis) ---
         const PILLAR_1_TARGETS = {
-            "1.1": 4, "1.2": 4, "1.3": 2, 
-            "1.4": 2, "1.5": 4, "1.6": 4, "1.7": 5, 
-            "1.8": 8, "1.9": 7
+            "1.1": 4, "1.2": 4, "1.3": 2, "1.4": 2, "1.5": 4, "1.6": 4, "1.7": 5, "1.8": 8, "1.9": 7
         };
         const totalPillar1Target = 40;
+
+        const PILLAR_2_TARGETS = {
+            "2.1": 6, "2.2": 4, "2.3": 2, "2.4": 4, "2.5": 2, "2.6": 4, 
+            "2.7": 3, "2.8": 4, "2.9": 6, "2.10": 10, "2.11": 5, "2.12": 6
+        };
+        const totalPillar2Target = 56;
 
         // --- 3. Run ONE database query for the whole dashboard ---
         onSnapshot(collection(db, "gk_assessments"), (snapshot) => {
@@ -248,15 +256,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 "Enabling Policies": 0, "Knowledge Management and Advocacy": 0, "Partnership and Participation": 0 
             };
             
-            // Variables for Pillar 1 Accordion
+            // Variables for Accordions
             let p1Counts = { "1.1": 0, "1.2": 0, "1.3": 0, "1.4": 0, "1.5": 0, "1.6": 0, "1.7": 0, "1.8": 0, "1.9": 0 };
+            let p2Counts = { "2.1": 0, "2.2": 0, "2.3": 0, "2.4": 0, "2.5": 0, "2.6": 0, "2.7": 0, "2.8": 0, "2.9": 0, "2.10": 0, "2.11": 0, "2.12": 0 };
+            
             let totalPillar1Uploaded = 0;
+            let totalPillar2Uploaded = 0;
 
             let totalOk = 0;
             let pendingCount = 0;
             let reviewCount = 0;
             let requestedItems = []; 
-            const TOTAL_CRITERIA = 26;
+            const TOTAL_CRITERIA = 26; // This will change as we finalize all pillars
 
             // A. Tally up all the data from Firebase
             snapshot.forEach((docSnap) => {
@@ -271,6 +282,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     if (data.pillar === "Structure" && p1Counts[data.criterion] !== undefined) {
                         p1Counts[data.criterion]++;
                     }
+                    // Count specific criteria for Pillar 2
+                    if (data.pillar === "Competency" && p2Counts[data.criterion] !== undefined) {
+                        p2Counts[data.criterion]++;
+                    }
                 }
 
                 // Count KPIs and collect Requested items
@@ -283,34 +298,41 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             });
 
-            // B. Calculate & Update Pillar 1 Accordion Math
-            for (let crit in PILLAR_1_TARGETS) {
-                let uploaded = p1Counts[crit];
-                let target = PILLAR_1_TARGETS[crit];
-                
-                // Cap the overall contribution so over-uploading doesn't break math
-                totalPillar1Uploaded += Math.min(uploaded, target); 
+            // B. Calculate & Update Pillar Accordion Math (Helper Function)
+            const processPillarMath = (countsObj, targetsObj, prefix, overallTarget) => {
+                let totalUploaded = 0;
+                for (let crit in targetsObj) {
+                    let uploaded = countsObj[crit];
+                    let target = targetsObj[crit];
+                    
+                    // Cap the overall contribution so over-uploading doesn't break math
+                    totalUploaded += Math.min(uploaded, target); 
 
-                // Calculate percentage
-                let pct = Math.round((uploaded / target) * 100);
-                if (pct > 100) pct = 100;
+                    // Calculate percentage
+                    let pct = Math.round((uploaded / target) * 100);
+                    if (pct > 100) pct = 100;
 
-                // Push to HTML and color code it
-                let pctElement = document.getElementById(`pct-${crit.replace('.', '-')}`);
-                if (pctElement) {
-                    pctElement.innerText = `${pct}%`;
-                    pctElement.style.color = pct >= 100 ? '#27ae60' : (pct > 0 ? '#e67e22' : '#e74c3c');
+                    // Push to HTML and color code it
+                    let pctElement = document.getElementById(`pct-${crit.replace('.', '-')}`);
+                    if (pctElement) {
+                        pctElement.innerText = `${pct}%`;
+                        pctElement.style.color = pct >= 100 ? '#27ae60' : (pct > 0 ? '#e67e22' : '#e74c3c');
+                    }
                 }
-            }
+                
+                // Update overall header percentage
+                let overallPct = Math.round((totalUploaded / overallTarget) * 100);
+                let overallElement = document.getElementById(`pillar-${prefix}-overall-pct`);
+                if (overallElement) {
+                    overallElement.innerText = `(${overallPct}%)`;
+                }
+            };
 
-            // Push Overall Pillar 1 Percentage
-            let overallPct = Math.round((totalPillar1Uploaded / totalPillar1Target) * 100);
-            let overallElement = document.getElementById('pillar-1-overall-pct');
-            if (overallElement) {
-                overallElement.innerText = `(${overallPct}%)`;
-            }
+            // Run the math for both mapped Pillars
+            processPillarMath(p1Counts, PILLAR_1_TARGETS, "1", totalPillar1Target);
+            processPillarMath(p2Counts, PILLAR_2_TARGETS, "2", totalPillar2Target);
 
-            // C. Update Old Progress Bars (For Pillars 2-6)
+            // C. Update Old Progress Bars (For Pillars 3-6)
             const updateBar = (id, textId, count, target) => {
                 const bar = document.getElementById(id);
                 const text = document.getElementById(textId);
@@ -320,8 +342,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     text.innerText = count;
                 }
             };
-            // Note: Structure bar is removed since we use the Accordion now
-            updateBar("bar-competency", "text-competency", counts["Competency"], 5);
             updateBar("bar-management", "text-management", counts["Management Systems"], 5);
             updateBar("bar-policies", "text-policies", counts["Enabling Policies"], 5);
             updateBar("bar-knowledge", "text-knowledge", counts["Knowledge Management and Advocacy"], 5);
@@ -333,7 +353,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const kpiReview = document.getElementById("kpiReview");
             const kpiScore = document.getElementById("kpiScore");
             const kpiScoreText = document.getElementById("kpiScoreText");
-            const kpiCompletion = document.getElementById("kpiCompletion");
 
             if (kpiCompletion && kpiFraction) {
                 const totalPercent = Math.round((totalOk / TOTAL_CRITERIA) * 100);
