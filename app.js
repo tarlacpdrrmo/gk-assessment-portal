@@ -217,7 +217,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 // ==========================================
-    // MODULE 2: UNIFIED DASHBOARD LOGIC & ACCORDIONS (PILLARS 1 & 2)
+    // MODULE 2: UNIFIED DASHBOARD LOGIC & ACCORDIONS (PILLARS 1, 2, & 3)
     // ==========================================
     const kpiCompletion = document.getElementById("kpiCompletion"); 
     
@@ -235,7 +235,8 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         };
         setupAccordion('header-pillar-1', 'content-pillar-1');
-        setupAccordion('header-pillar-2', 'content-pillar-2'); // Added Pillar 2
+        setupAccordion('header-pillar-2', 'content-pillar-2');
+        setupAccordion('header-pillar-3', 'content-pillar-3'); // Added Pillar 3
 
         // --- 2. SPECIFIC PILLAR TARGETS (From Toolkit Analysis) ---
         const PILLAR_1_TARGETS = {
@@ -249,25 +250,27 @@ document.addEventListener("DOMContentLoaded", () => {
         };
         const totalPillar2Target = 56;
 
+        const PILLAR_3_TARGETS = {
+            "3.1": 4, "3.2": 2, "3.3": 4
+        };
+        const totalPillar3Target = 10;
+
         // --- 3. Run ONE database query for the whole dashboard ---
         onSnapshot(collection(db, "gk_assessments"), (snapshot) => {
             let counts = { 
-                "Structure": 0, "Competency": 0, "Management Systems": 0, 
                 "Enabling Policies": 0, "Knowledge Management and Advocacy": 0, "Partnership and Participation": 0 
             };
             
             // Variables for Accordions
             let p1Counts = { "1.1": 0, "1.2": 0, "1.3": 0, "1.4": 0, "1.5": 0, "1.6": 0, "1.7": 0, "1.8": 0, "1.9": 0 };
             let p2Counts = { "2.1": 0, "2.2": 0, "2.3": 0, "2.4": 0, "2.5": 0, "2.6": 0, "2.7": 0, "2.8": 0, "2.9": 0, "2.10": 0, "2.11": 0, "2.12": 0 };
+            let p3Counts = { "3.1": 0, "3.2": 0, "3.3": 0 }; // Pillar 3 setup
             
-            let totalPillar1Uploaded = 0;
-            let totalPillar2Uploaded = 0;
-
             let totalOk = 0;
             let pendingCount = 0;
             let reviewCount = 0;
             let requestedItems = []; 
-            const TOTAL_CRITERIA = 26; // This will change as we finalize all pillars
+            const TOTAL_CRITERIA = 26; // This overall denominator will change later
 
             // A. Tally up all the data from Firebase
             snapshot.forEach((docSnap) => {
@@ -278,13 +281,15 @@ document.addEventListener("DOMContentLoaded", () => {
                     if (counts[data.pillar] !== undefined) counts[data.pillar]++;
                     totalOk++;
 
-                    // Count specific criteria for Pillar 1
+                    // Count specific criteria for Pillar Accordions
                     if (data.pillar === "Structure" && p1Counts[data.criterion] !== undefined) {
                         p1Counts[data.criterion]++;
                     }
-                    // Count specific criteria for Pillar 2
                     if (data.pillar === "Competency" && p2Counts[data.criterion] !== undefined) {
                         p2Counts[data.criterion]++;
+                    }
+                    if (data.pillar === "Management Systems" && p3Counts[data.criterion] !== undefined) {
+                        p3Counts[data.criterion]++;
                     }
                 }
 
@@ -328,11 +333,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             };
 
-            // Run the math for both mapped Pillars
+            // Run the math for all three mapped Pillars
             processPillarMath(p1Counts, PILLAR_1_TARGETS, "1", totalPillar1Target);
             processPillarMath(p2Counts, PILLAR_2_TARGETS, "2", totalPillar2Target);
+            processPillarMath(p3Counts, PILLAR_3_TARGETS, "3", totalPillar3Target); // Pillar 3 Executed
 
-            // C. Update Old Progress Bars (For Pillars 3-6)
+            // C. Update Old Progress Bars (For Remaining Pillars 4-6)
             const updateBar = (id, textId, count, target) => {
                 const bar = document.getElementById(id);
                 const text = document.getElementById(textId);
@@ -342,7 +348,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     text.innerText = count;
                 }
             };
-            updateBar("bar-management", "text-management", counts["Management Systems"], 5);
+            
             updateBar("bar-policies", "text-policies", counts["Enabling Policies"], 5);
             updateBar("bar-knowledge", "text-knowledge", counts["Knowledge Management and Advocacy"], 5);
             updateBar("bar-partnership", "text-partnership", counts["Partnership and Participation"], 5);
