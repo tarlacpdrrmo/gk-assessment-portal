@@ -217,35 +217,63 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 // ==========================================
-    // MODULE 2: UNIFIED DASHBOARD LOGIC
+    // MODULE 2: UNIFIED DASHBOARD LOGIC & PILLAR 1 ACCORDION
     // ==========================================
-    const barStructure = document.getElementById("bar-structure");
+    const kpiCompletion = document.getElementById("kpiCompletion"); 
     
-    if (barStructure) { 
-        // We run ONE query to pull everything for the dashboard
+    if (kpiCompletion) { 
+        // --- 1. Make the Accordion Clickable ---
+        const headerPillar1 = document.getElementById('header-pillar-1');
+        const contentPillar1 = document.getElementById('content-pillar-1');
+        if (headerPillar1 && contentPillar1) {
+            headerPillar1.addEventListener('click', () => {
+                const isHidden = contentPillar1.style.display === 'none';
+                contentPillar1.style.display = isHidden ? 'block' : 'none';
+                headerPillar1.querySelector('i').className = isHidden ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
+            });
+        }
+
+        // --- 2. PILLAR 1 TARGETS (From Toolkit Analysis) ---
+        const PILLAR_1_TARGETS = {
+            "1.1": 4, "1.2": 4, "1.3": 2, 
+            "1.4": 2, "1.5": 4, "1.6": 4, "1.7": 5, 
+            "1.8": 8, "1.9": 7
+        };
+        const totalPillar1Target = 40;
+
+        // --- 3. Run ONE database query for the whole dashboard ---
         onSnapshot(collection(db, "gk_assessments"), (snapshot) => {
             let counts = { 
                 "Structure": 0, "Competency": 0, "Management Systems": 0, 
                 "Enabling Policies": 0, "Knowledge Management and Advocacy": 0, "Partnership and Participation": 0 
             };
             
+            // Variables for Pillar 1 Accordion
+            let p1Counts = { "1.1": 0, "1.2": 0, "1.3": 0, "1.4": 0, "1.5": 0, "1.6": 0, "1.7": 0, "1.8": 0, "1.9": 0 };
+            let totalPillar1Uploaded = 0;
+
             let totalOk = 0;
             let pendingCount = 0;
             let reviewCount = 0;
-            let requestedItems = []; // Array to hold table data
+            let requestedItems = []; 
             const TOTAL_CRITERIA = 26;
 
-            // 1. Tally up all the data
+            // A. Tally up all the data from Firebase
             snapshot.forEach((docSnap) => {
                 const data = docSnap.data();
                 
-                // Count completed items for bars
+                // Count completed items (Only count if OK or Hardcopy On Hand)
                 if (data.status === "OK / Scanned" || data.status === "Hardcopy On Hand") {
                     if (counts[data.pillar] !== undefined) counts[data.pillar]++;
                     totalOk++;
+
+                    // Count specific criteria for Pillar 1
+                    if (data.pillar === "Structure" && p1Counts[data.criterion] !== undefined) {
+                        p1Counts[data.criterion]++;
+                    }
                 }
 
-                // Count KPIs and collect Requested items for the table
+                // Count KPIs and collect Requested items
                 if (data.status === "Requested") {
                     pendingCount++;
                     requestedItems.push(data);
@@ -255,7 +283,34 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             });
 
-            // 2. Update Progress Bars
+            // B. Calculate & Update Pillar 1 Accordion Math
+            for (let crit in PILLAR_1_TARGETS) {
+                let uploaded = p1Counts[crit];
+                let target = PILLAR_1_TARGETS[crit];
+                
+                // Cap the overall contribution so over-uploading doesn't break math
+                totalPillar1Uploaded += Math.min(uploaded, target); 
+
+                // Calculate percentage
+                let pct = Math.round((uploaded / target) * 100);
+                if (pct > 100) pct = 100;
+
+                // Push to HTML and color code it
+                let pctElement = document.getElementById(`pct-${crit.replace('.', '-')}`);
+                if (pctElement) {
+                    pctElement.innerText = `${pct}%`;
+                    pctElement.style.color = pct >= 100 ? '#27ae60' : (pct > 0 ? '#e67e22' : '#e74c3c');
+                }
+            }
+
+            // Push Overall Pillar 1 Percentage
+            let overallPct = Math.round((totalPillar1Uploaded / totalPillar1Target) * 100);
+            let overallElement = document.getElementById('pillar-1-overall-pct');
+            if (overallElement) {
+                overallElement.innerText = `(${overallPct}%)`;
+            }
+
+            // C. Update Old Progress Bars (For Pillars 2-6)
             const updateBar = (id, textId, count, target) => {
                 const bar = document.getElementById(id);
                 const text = document.getElementById(textId);
@@ -265,23 +320,20 @@ document.addEventListener("DOMContentLoaded", () => {
                     text.innerText = count;
                 }
             };
-
-            updateBar("bar-structure", "text-structure", counts["Structure"], 5);
+            // Note: Structure bar is removed since we use the Accordion now
             updateBar("bar-competency", "text-competency", counts["Competency"], 5);
             updateBar("bar-management", "text-management", counts["Management Systems"], 5);
             updateBar("bar-policies", "text-policies", counts["Enabling Policies"], 5);
             updateBar("bar-knowledge", "text-knowledge", counts["Knowledge Management and Advocacy"], 5);
             updateBar("bar-partnership", "text-partnership", counts["Partnership and Participation"], 5);
 
-// 3. Update the Top KPI Numbers
-            const kpiCompletion = document.getElementById("kpiCompletion");
+            // D. Update the Top KPI Numbers
             const kpiFraction = document.getElementById("kpiFraction");
             const kpiPending = document.getElementById("kpiPending");
             const kpiReview = document.getElementById("kpiReview");
-            
-            // New Score Elements
             const kpiScore = document.getElementById("kpiScore");
             const kpiScoreText = document.getElementById("kpiScoreText");
+            const kpiCompletion = document.getElementById("kpiCompletion");
 
             if (kpiCompletion && kpiFraction) {
                 const totalPercent = Math.round((totalOk / TOTAL_CRITERIA) * 100);
@@ -297,20 +349,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 const currentScore = ((totalOk / TOTAL_CRITERIA) * maxScore).toFixed(2);
                 kpiScore.innerText = currentScore;
 
-                // Dynamically change the text and color based on the score
                 if (currentScore >= 2.50) {
                     kpiScoreText.innerText = "Beyond Compliant (Projected)";
-                    kpiScore.style.color = "#f1c40f"; // Gold
+                    kpiScore.style.color = "#f1c40f"; 
                 } else if (currentScore >= 1.50) {
                     kpiScoreText.innerText = "Fully Compliant (Projected)";
-                    kpiScore.style.color = "#3498db"; // Blue
+                    kpiScore.style.color = "#3498db"; 
                 } else {
                     kpiScoreText.innerText = "Needs Improvement (Projected)";
-                    kpiScore.style.color = "#e74c3c"; // Red
+                    kpiScore.style.color = "#e74c3c"; 
                 }
             }
 
-            // 4. Update the Priority Table
+            // E. Update the Priority Table
             const priorityTable = document.getElementById("priorityOprTableBody");
             if (priorityTable) {
                 priorityTable.innerHTML = "";
@@ -318,14 +369,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (requestedItems.length === 0) {
                     priorityTable.innerHTML = '<tr><td colspan="4" style="padding: 20px; text-align: center; color: #27ae60;"><strong><i class="fas fa-check-circle"></i> All caught up! No pending OPR requests.</strong></td></tr>';
                 } else {
-                    // Sort items in JavaScript (newest first) to bypass Firebase index errors
                     requestedItems.sort((a, b) => {
                         const dateA = a.created_at ? a.created_at.toMillis() : 0;
                         const dateB = b.created_at ? b.created_at.toMillis() : 0;
                         return dateB - dateA;
                     });
 
-                    // Take the top 4 items and inject them into the table
                     const topItems = requestedItems.slice(0, 4);
                     topItems.forEach(item => {
                         const row = document.createElement("tr");
