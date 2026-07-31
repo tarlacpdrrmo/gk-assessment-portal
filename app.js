@@ -676,3 +676,155 @@ if (pillarSelect && criterionSelect) {
         }
     });
 }
+
+// ==========================================
+// PART 1: STRICT DASHBOARD MATH ENGINE
+// ==========================================
+
+// 1. The Data Dictionary (Locked-in targets for Pillar I)
+const CRITERIA_TARGETS = {
+    "1.1": 4, 
+    "1.2": 8, 
+    "1.3": 19, 
+    "1.4": 2, 
+    "1.5": 4, 
+    "1.6": 4, 
+    "1.7": 4, 
+    "1.8": 8, 
+    "1.9": 7
+};
+
+// Total criteria count for Gawad KALASAG 
+const TOTAL_CRITERIA = 29; 
+
+// 2. Simulated Database (Change these to test your dashboard Math!)
+let currentUploads = {
+    "1.1": 2, // 50%
+    "1.2": 2, 
+    "1.3": 0, 
+    "1.4": 2, // 100% Fully satisfied!
+    "1.5": 0, 
+    "1.6": 0, 
+    "1.7": 0, 
+    "1.8": 0, 
+    "1.9": 0
+};
+
+// 3. The Math Function
+function updateDashboardMath() {
+    let fullyCompletedCriteria = 0;
+
+    for (const [criterion, target] of Object.entries(CRITERIA_TARGETS)) {
+        let uploaded = currentUploads[criterion] || 0;
+        let percent = Math.min((uploaded / target) * 100, 100);
+
+        let uiElementId = `pct-${criterion.replace('.', '-')}`; 
+        let uiElement = document.getElementById(uiElementId);
+        
+        if (uiElement) {
+            if (percent === 0) uiElement.style.color = "#e74c3c"; // Red
+            else if (percent < 100) uiElement.style.color = "#e67e22"; // Orange
+            else uiElement.style.color = "#27ae60"; // Green
+            
+            uiElement.textContent = `${Math.round(percent)}%`;
+        }
+
+        // OPTION A STRICT LOGIC: Only count it towards the top KPI if exactly 100%
+        if (percent === 100) {
+            fullyCompletedCriteria++;
+        }
+    }
+
+    // 4. Update the Top KPI Cards
+    let overallPercent = Math.round((fullyCompletedCriteria / TOTAL_CRITERIA) * 100);
+    let kpiCompletion = document.getElementById("kpiCompletion");
+    let kpiFraction = document.getElementById("kpiFraction");
+
+    if (kpiCompletion && kpiFraction) {
+        kpiCompletion.textContent = `${overallPercent}%`;
+        kpiFraction.textContent = `${fullyCompletedCriteria}/${TOTAL_CRITERIA} Criteria Fully Satisfied`;
+    }
+}
+
+// Run the math when the page loads
+document.addEventListener("DOMContentLoaded", updateDashboardMath);
+
+
+// ==========================================
+// PART 2: CHECKLIST MODAL & CASCADING DROPDOWNS
+// ==========================================
+const openModalBtn = document.getElementById("openModalBtn");
+const closeModalBtn = document.getElementById("closeModalBtn");
+const modal = document.getElementById("recordModal");
+const pillarSelect = document.getElementById("inputPillar");
+const criterionSelect = document.getElementById("inputCriterion");
+
+// 1. Open / Close Modal Logic
+if (openModalBtn && modal && closeModalBtn) {
+    openModalBtn.addEventListener("click", () => {
+        modal.style.display = "flex";
+    });
+    
+    closeModalBtn.addEventListener("click", () => {
+        modal.style.display = "none";
+        document.getElementById("addRecordForm").reset();
+        if(criterionSelect) {
+            criterionSelect.innerHTML = '<option value="">Select a Pillar first...</option>';
+        }
+    });
+}
+
+// 2. Cascading Dropdown Dictionary with Categories (Pillar I)
+const criteriaMap = {
+    "Structure": [
+        {
+            groupName: "A. Established and Functional LDRRMC",
+            indicators: [
+                { id: "1.1", title: "Establishment of LDRRMC" },
+                { id: "1.2", title: "Convene the LDRRMC quarterly or as necessary" },
+                { id: "1.3", title: "Organization of DRRMC" }
+            ]
+        },
+        {
+            groupName: "B. Creation of Local DRRM Office",
+            indicators: [
+                { id: "1.4", title: "Secretariat and Executive Arm of LDRRMC" },
+                { id: "1.5", title: "Creation of LDRRM Office" },
+                { id: "1.6", title: "LDRRMO Staffing/ Personnel Complement" },
+                { id: "1.7", title: "Local DRRM Officer" }
+            ]
+        },
+        {
+            groupName: "C. Established Local DRRM Operations Center",
+            indicators: [
+                { id: "1.8", title: "Establishment of Prov/City/Mun DRRM Ops Center" },
+                { id: "1.9", title: "Organization and Competence of local ERTs" }
+            ]
+        }
+    ]
+};
+
+// 3. Dropdown Event Listener with <optgroup> creation
+if (pillarSelect && criterionSelect) {
+    pillarSelect.addEventListener("change", function() {
+        const selectedPillar = this.value;
+        
+        criterionSelect.innerHTML = '<option value="">Select Criterion...</option>';
+        
+        if (criteriaMap[selectedPillar]) {
+            criteriaMap[selectedPillar].forEach(category => {
+                const optGroup = document.createElement("optgroup");
+                optGroup.label = category.groupName;
+                
+                category.indicators.forEach(crit => {
+                    const option = document.createElement("option");
+                    option.value = crit.id; 
+                    option.textContent = `${crit.id} - ${crit.title}`;
+                    optGroup.appendChild(option);
+                });
+                
+                criterionSelect.appendChild(optGroup);
+            });
+        }
+    });
+}
