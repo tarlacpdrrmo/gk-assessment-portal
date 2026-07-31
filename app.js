@@ -596,13 +596,13 @@ const totalPillar1Target = 60;
 });
 
 // ==========================================
-// UPLOAD MODAL & CASCADING DROPDOWN LOGIC
+// CHECKLIST MODAL & CASCADING DROPDOWNS
 // ==========================================
-const openModalBtn = document.getElementById("openAddModalBtn");
+const openModalBtn = document.getElementById("openModalBtn");
 const closeModalBtn = document.getElementById("closeModalBtn");
-const modal = document.getElementById("addMovModal");
-const pillarSelect = document.getElementById("mov-pillar");
-const criterionSelect = document.getElementById("mov-criterion");
+const modal = document.getElementById("recordModal");
+const pillarSelect = document.getElementById("inputPillar");
+const criterionSelect = document.getElementById("inputCriterion");
 
 // 1. Open / Close Modal Logic
 if (openModalBtn && modal && closeModalBtn) {
@@ -612,12 +612,14 @@ if (openModalBtn && modal && closeModalBtn) {
     
     closeModalBtn.addEventListener("click", () => {
         modal.style.display = "none";
-        document.getElementById("addMovForm").reset(); // Clear form on close
-        criterionSelect.innerHTML = '<option value="">Select a Pillar first...</option>';
+        document.getElementById("addRecordForm").reset(); // Clear form
+        if(criterionSelect) {
+            criterionSelect.innerHTML = '<option value="">Select a Pillar first...</option>';
+        }
     });
 }
 
-// 2. Cascading Dropdown Dictionary
+// 2. Cascading Dropdown Dictionary (Pillar I)
 const criteriaMap = {
     "Structure": [
         "1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9"
@@ -629,7 +631,7 @@ if (pillarSelect && criterionSelect) {
     pillarSelect.addEventListener("change", function() {
         const selectedPillar = this.value;
         
-        criterionSelect.innerHTML = '<option value="">Select Indicator...</option>';
+        criterionSelect.innerHTML = '<option value="">Select Criterion...</option>';
         
         if (criteriaMap[selectedPillar]) {
             criteriaMap[selectedPillar].forEach(crit => {
