@@ -641,3 +641,95 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+
+// ==========================================
+    // MODULE 6: TABLE FILTERING ENGINE
+    // ==========================================
+    const filterPillar = document.getElementById("filterPillar");
+    const filterCriterion = document.getElementById("filterCriterion");
+    const filterOPR = document.getElementById("filterOPR");
+    const filterStatus = document.getElementById("filterStatus");
+    const resetFiltersBtn = document.getElementById("resetFiltersBtn");
+    const checklistTableBodyFilter = document.getElementById("checklistTableBody");
+
+    if (filterPillar && filterCriterion && filterOPR && filterStatus) {
+        
+        // 1. Populate Dropdowns from Firebase
+        onSnapshot(query(collection(db, "gk_oprs"), orderBy("name")), (snapshot) => {
+            filterOPR.innerHTML = '<option value="All">All OPRs</option>';
+            snapshot.forEach(docSnap => filterOPR.innerHTML += `<option value="${docSnap.data().name}">${docSnap.data().name}</option>`);
+        });
+
+        onSnapshot(query(collection(db, "gk_statuses"), orderBy("name")), (snapshot) => {
+            filterStatus.innerHTML = '<option value="All">All Statuses</option>';
+            snapshot.forEach(docSnap => filterStatus.innerHTML += `<option value="${docSnap.data().name}">${docSnap.data().name}</option>`);
+        });
+
+        // 2. Cascading Pillar -> Criterion Filter
+        filterPillar.addEventListener("change", () => {
+            const selected = filterPillar.value;
+            filterCriterion.innerHTML = '<option value="All">All Criteria</option>';
+            
+            if (selected !== "All" && criteriaMap[selected]) {
+                criteriaMap[selected].forEach(category => {
+                    const optGroup = document.createElement("optgroup");
+                    optGroup.label = category.groupName;
+                    category.indicators.forEach(crit => {
+                        optGroup.innerHTML += `<option value="${crit.id}">${crit.id} - ${crit.title}</option>`;
+                    });
+                    filterCriterion.appendChild(optGroup);
+                });
+            }
+            applyFilters();
+        });
+
+        // 3. The Core Filter Logic
+        const applyFilters = () => {
+            if (!checklistTableBodyFilter) return;
+            const pVal = filterPillar.value;
+            const cVal = filterCriterion.value;
+            const oVal = filterOPR.value;
+            const sVal = filterStatus.value;
+
+            const rows = checklistTableBodyFilter.querySelectorAll("tr");
+            rows.forEach(row => {
+                if (row.cells.length < 5) return; // Skip empty state row
+
+                const rowPillar = row.cells[0].innerText.trim();
+                const rowCriterion = row.cells[1].innerText.trim();
+                const rowOPR = row.cells[3].innerText.trim();
+                const rowStatus = row.cells[4].innerText.trim();
+
+                const matchPillar = (pVal === "All" || rowPillar === pVal);
+                const matchCriterion = (cVal === "All" || rowCriterion === cVal);
+                const matchOPR = (oVal === "All" || rowOPR === oVal);
+                const matchStatus = (sVal === "All" || rowStatus === sVal);
+
+                if (matchPillar && matchCriterion && matchOPR && matchStatus) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        };
+
+        // 4. Trigger filters on dropdown change
+        filterCriterion.addEventListener("change", applyFilters);
+        filterOPR.addEventListener("change", applyFilters);
+        filterStatus.addEventListener("change", applyFilters);
+
+        // 5. Reset Button
+        if (resetFiltersBtn) {
+            resetFiltersBtn.addEventListener("click", () => {
+                filterPillar.value = "All";
+                filterPillar.dispatchEvent(new Event("change")); // Resets the criteria list
+                filterOPR.value = "All";
+                filterStatus.value = "All";
+                setTimeout(applyFilters, 50);
+            });
+        }
+
+        // 6. Auto-filter when Firebase adds new data to the table
+        const observer = new MutationObserver(applyFilters);
+        observer.observe(checklistTableBodyFilter, { childList: true });
+    }
