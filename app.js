@@ -293,8 +293,8 @@ document.addEventListener("DOMContentLoaded", () => {
         setupAccordion('header-pillar-6', 'content-pillar-6'); 
 
         // TARGETS (Updated based on Lead Admin Data Dictionary)
-        const PILLAR_1_TARGETS = { "1.1": 4, "1.2": 8, "1.3": 19, "1.4": 2, "1.5": 4, "1.6": 4, "1.7": 4, "1.8": 8, "1.9": 7 };
-        const totalPillar1Target = 60;
+        const PILLAR_1_TARGETS = { "1.1": 4, "1.2": 8, "1.3": 19, "1.4": 4, "1.5": 4, "1.6": 4, "1.7": 4, "1.8": 8, "1.9": 7 };
+        const totalPillar1Target = 62;
         const PILLAR_2_TARGETS = { "2.1": 6, "2.2": 4, "2.3": 2, "2.4": 4, "2.5": 2, "2.6": 4, "2.7": 3, "2.8": 4, "2.9": 6, "2.10": 10, "2.11": 5, "2.12": 6 };
         const totalPillar2Target = 56;
         const PILLAR_3_TARGETS = { "3.1": 4, "3.2": 2, "3.3": 4 };
