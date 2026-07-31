@@ -217,12 +217,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 // ==========================================
-    // MODULE 2: UNIFIED DASHBOARD LOGIC & ACCORDIONS (PILLARS 1, 2, & 3)
+    // MODULE 2: UNIFIED DASHBOARD LOGIC (ALL 6 PILLARS)
     // ==========================================
     const kpiCompletion = document.getElementById("kpiCompletion"); 
     
     if (kpiCompletion) { 
-        // --- 1. Make the Accordions Clickable ---
         const setupAccordion = (headerId, contentId) => {
             const header = document.getElementById(headerId);
             const content = document.getElementById(contentId);
@@ -236,124 +235,84 @@ document.addEventListener("DOMContentLoaded", () => {
         };
         setupAccordion('header-pillar-1', 'content-pillar-1');
         setupAccordion('header-pillar-2', 'content-pillar-2');
-        setupAccordion('header-pillar-3', 'content-pillar-3'); // Added Pillar 3
+        setupAccordion('header-pillar-3', 'content-pillar-3'); 
+        setupAccordion('header-pillar-4', 'content-pillar-4'); 
+        setupAccordion('header-pillar-5', 'content-pillar-5'); 
+        setupAccordion('header-pillar-6', 'content-pillar-6'); 
 
-        // --- 2. SPECIFIC PILLAR TARGETS (From Toolkit Analysis) ---
-        const PILLAR_1_TARGETS = {
-            "1.1": 4, "1.2": 4, "1.3": 2, "1.4": 2, "1.5": 4, "1.6": 4, "1.7": 5, "1.8": 8, "1.9": 7
-        };
+        // TARGETS
+        const PILLAR_1_TARGETS = { "1.1": 4, "1.2": 4, "1.3": 2, "1.4": 2, "1.5": 4, "1.6": 4, "1.7": 5, "1.8": 8, "1.9": 7 };
         const totalPillar1Target = 40;
-
-        const PILLAR_2_TARGETS = {
-            "2.1": 6, "2.2": 4, "2.3": 2, "2.4": 4, "2.5": 2, "2.6": 4, 
-            "2.7": 3, "2.8": 4, "2.9": 6, "2.10": 10, "2.11": 5, "2.12": 6
-        };
+        const PILLAR_2_TARGETS = { "2.1": 6, "2.2": 4, "2.3": 2, "2.4": 4, "2.5": 2, "2.6": 4, "2.7": 3, "2.8": 4, "2.9": 6, "2.10": 10, "2.11": 5, "2.12": 6 };
         const totalPillar2Target = 56;
-
-        const PILLAR_3_TARGETS = {
-            "3.1": 4, "3.2": 2, "3.3": 4
-        };
+        const PILLAR_3_TARGETS = { "3.1": 4, "3.2": 2, "3.3": 4 };
         const totalPillar3Target = 10;
+        const PILLAR_4_TARGETS = { "4.1": 4 };
+        const totalPillar4Target = 4;
+        const PILLAR_5_TARGETS = { "5.1": 4, "5.2": 4 };
+        const totalPillar5Target = 8;
+        const PILLAR_6_TARGETS = { "6.1": 6, "6.2": 4 };
+        const totalPillar6Target = 10;
 
-        // --- 3. Run ONE database query for the whole dashboard ---
         onSnapshot(collection(db, "gk_assessments"), (snapshot) => {
-            let counts = { 
-                "Enabling Policies": 0, "Knowledge Management and Advocacy": 0, "Partnership and Participation": 0 
-            };
-            
-            // Variables for Accordions
             let p1Counts = { "1.1": 0, "1.2": 0, "1.3": 0, "1.4": 0, "1.5": 0, "1.6": 0, "1.7": 0, "1.8": 0, "1.9": 0 };
             let p2Counts = { "2.1": 0, "2.2": 0, "2.3": 0, "2.4": 0, "2.5": 0, "2.6": 0, "2.7": 0, "2.8": 0, "2.9": 0, "2.10": 0, "2.11": 0, "2.12": 0 };
-            let p3Counts = { "3.1": 0, "3.2": 0, "3.3": 0 }; // Pillar 3 setup
+            let p3Counts = { "3.1": 0, "3.2": 0, "3.3": 0 }; 
+            let p4Counts = { "4.1": 0 }; 
+            let p5Counts = { "5.1": 0, "5.2": 0 }; 
+            let p6Counts = { "6.1": 0, "6.2": 0 }; 
             
             let totalOk = 0;
             let pendingCount = 0;
             let reviewCount = 0;
             let requestedItems = []; 
-            const TOTAL_CRITERIA = 26; // This overall denominator will change later
+            const TOTAL_CRITERIA = 29; 
 
-            // A. Tally up all the data from Firebase
             snapshot.forEach((docSnap) => {
                 const data = docSnap.data();
-                
-                // Count completed items (Only count if OK or Hardcopy On Hand)
                 if (data.status === "OK / Scanned" || data.status === "Hardcopy On Hand") {
-                    if (counts[data.pillar] !== undefined) counts[data.pillar]++;
                     totalOk++;
-
-                    // Count specific criteria for Pillar Accordions
-                    if (data.pillar === "Structure" && p1Counts[data.criterion] !== undefined) {
-                        p1Counts[data.criterion]++;
-                    }
-                    if (data.pillar === "Competency" && p2Counts[data.criterion] !== undefined) {
-                        p2Counts[data.criterion]++;
-                    }
-                    if (data.pillar === "Management Systems" && p3Counts[data.criterion] !== undefined) {
-                        p3Counts[data.criterion]++;
-                    }
+                    if (data.pillar === "Structure" && p1Counts[data.criterion] !== undefined) p1Counts[data.criterion]++;
+                    if (data.pillar === "Competency" && p2Counts[data.criterion] !== undefined) p2Counts[data.criterion]++;
+                    if (data.pillar === "Management Systems" && p3Counts[data.criterion] !== undefined) p3Counts[data.criterion]++;
+                    if (data.pillar === "Enabling Policies" && p4Counts[data.criterion] !== undefined) p4Counts[data.criterion]++;
+                    if (data.pillar === "Knowledge Management and Advocacy" && p5Counts[data.criterion] !== undefined) p5Counts[data.criterion]++;
+                    if (data.pillar === "Partnership and Participation" && p6Counts[data.criterion] !== undefined) p6Counts[data.criterion]++;
                 }
-
-                // Count KPIs and collect Requested items
                 if (data.status === "Requested") {
                     pendingCount++;
                     requestedItems.push(data);
                 }
-                if (data.status === "Under Review") {
-                    reviewCount++;
-                }
+                if (data.status === "Under Review") reviewCount++;
             });
 
-            // B. Calculate & Update Pillar Accordion Math (Helper Function)
             const processPillarMath = (countsObj, targetsObj, prefix, overallTarget) => {
                 let totalUploaded = 0;
                 for (let crit in targetsObj) {
                     let uploaded = countsObj[crit];
                     let target = targetsObj[crit];
-                    
-                    // Cap the overall contribution so over-uploading doesn't break math
                     totalUploaded += Math.min(uploaded, target); 
-
-                    // Calculate percentage
                     let pct = Math.round((uploaded / target) * 100);
                     if (pct > 100) pct = 100;
-
-                    // Push to HTML and color code it
                     let pctElement = document.getElementById(`pct-${crit.replace('.', '-')}`);
                     if (pctElement) {
                         pctElement.innerText = `${pct}%`;
                         pctElement.style.color = pct >= 100 ? '#27ae60' : (pct > 0 ? '#e67e22' : '#e74c3c');
                     }
                 }
-                
-                // Update overall header percentage
                 let overallPct = Math.round((totalUploaded / overallTarget) * 100);
                 let overallElement = document.getElementById(`pillar-${prefix}-overall-pct`);
-                if (overallElement) {
-                    overallElement.innerText = `(${overallPct}%)`;
-                }
+                if (overallElement) overallElement.innerText = `(${overallPct}%)`;
             };
 
-            // Run the math for all three mapped Pillars
             processPillarMath(p1Counts, PILLAR_1_TARGETS, "1", totalPillar1Target);
             processPillarMath(p2Counts, PILLAR_2_TARGETS, "2", totalPillar2Target);
-            processPillarMath(p3Counts, PILLAR_3_TARGETS, "3", totalPillar3Target); // Pillar 3 Executed
+            processPillarMath(p3Counts, PILLAR_3_TARGETS, "3", totalPillar3Target); 
+            processPillarMath(p4Counts, PILLAR_4_TARGETS, "4", totalPillar4Target); 
+            processPillarMath(p5Counts, PILLAR_5_TARGETS, "5", totalPillar5Target); 
+            processPillarMath(p6Counts, PILLAR_6_TARGETS, "6", totalPillar6Target); 
 
-            // C. Update Old Progress Bars (For Remaining Pillars 4-6)
-            const updateBar = (id, textId, count, target) => {
-                const bar = document.getElementById(id);
-                const text = document.getElementById(textId);
-                if (bar && text) {
-                    const percent = Math.min((count / target) * 100, 100);
-                    bar.style.width = `${percent}%`;
-                    text.innerText = count;
-                }
-            };
-            
-            updateBar("bar-policies", "text-policies", counts["Enabling Policies"], 5);
-            updateBar("bar-knowledge", "text-knowledge", counts["Knowledge Management and Advocacy"], 5);
-            updateBar("bar-partnership", "text-partnership", counts["Partnership and Participation"], 5);
-
-            // D. Update the Top KPI Numbers
+            // KPIs
             const kpiFraction = document.getElementById("kpiFraction");
             const kpiPending = document.getElementById("kpiPending");
             const kpiReview = document.getElementById("kpiReview");
@@ -368,12 +327,10 @@ document.addEventListener("DOMContentLoaded", () => {
             if (kpiPending) kpiPending.innerText = pendingCount;
             if (kpiReview) kpiReview.innerText = reviewCount;
 
-            // Calculate Dynamic Score (Assuming Max Score of 3.0)
             if (kpiScore && kpiScoreText) {
                 const maxScore = 3.00;
                 const currentScore = ((totalOk / TOTAL_CRITERIA) * maxScore).toFixed(2);
                 kpiScore.innerText = currentScore;
-
                 if (currentScore >= 2.50) {
                     kpiScoreText.innerText = "Beyond Compliant (Projected)";
                     kpiScore.style.color = "#f1c40f"; 
@@ -386,22 +343,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
 
-            // E. Update the Priority Table
+            // Priority Table
             const priorityTable = document.getElementById("priorityOprTableBody");
             if (priorityTable) {
                 priorityTable.innerHTML = "";
-                
                 if (requestedItems.length === 0) {
                     priorityTable.innerHTML = '<tr><td colspan="4" style="padding: 20px; text-align: center; color: #27ae60;"><strong><i class="fas fa-check-circle"></i> All caught up! No pending OPR requests.</strong></td></tr>';
                 } else {
-                    requestedItems.sort((a, b) => {
-                        const dateA = a.created_at ? a.created_at.toMillis() : 0;
-                        const dateB = b.created_at ? b.created_at.toMillis() : 0;
-                        return dateB - dateA;
-                    });
-
-                    const topItems = requestedItems.slice(0, 4);
-                    topItems.forEach(item => {
+                    requestedItems.sort((a, b) => (b.created_at ? b.created_at.toMillis() : 0) - (a.created_at ? a.created_at.toMillis() : 0));
+                    requestedItems.slice(0, 4).forEach(item => {
                         const row = document.createElement("tr");
                         row.style.borderBottom = "1px solid #ecf0f1";
                         row.innerHTML = `
@@ -418,7 +368,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
-
     // ==========================================
     // MODULE 3: OPR REQUEST TRACKER LOGIC
     // ==========================================
