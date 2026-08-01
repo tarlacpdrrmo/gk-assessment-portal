@@ -782,7 +782,7 @@ document.addEventListener("DOMContentLoaded", () => {
         filterOPR.addEventListener("change", applyFilters);
         filterStatus.addEventListener("change", applyFilters);
 
-        // 5. Reset Button
+       // 5. Reset Button
         if (resetFiltersBtn) {
             resetFiltersBtn.addEventListener("click", () => {
                 filterPillar.value = "All";
@@ -797,4 +797,5 @@ document.addEventListener("DOMContentLoaded", () => {
         const observer = new MutationObserver(applyFilters);
         observer.observe(checklistTableBodyFilter, { childList: true });
     }
+
 });
