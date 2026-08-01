@@ -201,8 +201,17 @@ document.addEventListener("DOMContentLoaded", () => {
                 indicators: [
                     { id: "3.3", title: "Programming and budgeting for LDRRMF" }
                 ]
-            },
-]        
+            }
+],
+        "Enabling Policies": [
+            {
+                groupName: "A. LDRRM Council recommended DRRM-related policies",
+                indicators: [
+                    { id: "4.1", title: "Recommendation to enact DRRM-related ordinances through the LDRRMC" }
+                ]
+            }
+],
+        
     };
 
     if (pillarSelect && criterionSelect) {
@@ -800,8 +809,17 @@ document.addEventListener("DOMContentLoaded", () => {
                 indicators: [
                     { id: "3.3", title: "Programming and budgeting for LDRRMF" }
                 ]
-            },
-   ],     
+            }
+   ],
+        "Enabling Policies": [
+            {
+                groupName: "A. LDRRM Council recommended DRRM-related policies",
+                indicators: [
+                    { id: "4.1", title: "Recommendation to enact DRRM-related ordinances through the LDRRMC" }
+                ]
+            }
+    ],
+        
     };
 
     if (filterPillar && filterCriterion && filterOPR && filterStatus) {
