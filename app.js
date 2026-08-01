@@ -146,8 +146,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     { id: "1.9", title: "Organization and Competence of local ERTs" }
                 ]
             }
-        ]
-    };,
+        ],
+    };
 
     "Competency": [
             {
