@@ -146,7 +146,19 @@ document.addEventListener("DOMContentLoaded", () => {
                     { id: "1.9", title: "Organization and Competence of local ERTs" }
                 ]
             }
-        ]
+        ],
+
+        "Competency": [
+        {
+            groupName: "A. Capacitated on Disaster Prevention and Mitigation",
+            indicators: [
+                { id: "2.1", title: "Facilitation and Support to Risk Assessment" },
+                { id: "2.2", title: "Maintenance of Local Risk Maps" },
+                { id: "2.3", title: "Operation of multi-hazard end-to-end Early Warning System (EWS)" }
+            ]
+        }
+    ]
+        
     };
 
     if (pillarSelect && criterionSelect) {
@@ -690,7 +702,19 @@ document.addEventListener("DOMContentLoaded", () => {
                     { id: "1.9", title: "Organization and Competence of local ERTs" }
                 ]
             }
-        ]
+        ],
+    
+        "Competency": [
+        {
+            groupName: "A. Capacitated on Disaster Prevention and Mitigation",
+            indicators: [
+                { id: "2.1", title: "Facilitation and Support to Risk Assessment" },
+                { id: "2.2", title: "Maintenance of Local Risk Maps" },
+                { id: "2.3", title: "Operation of multi-hazard end-to-end Early Warning System (EWS)" }
+            ]
+        }
+    ]
+        
     };
 
     if (filterPillar && filterCriterion && filterOPR && filterStatus) {
