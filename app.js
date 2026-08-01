@@ -201,8 +201,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 indicators: [
                     { id: "3.3", title: "Programming and budgeting for LDRRMF" }
                 ]
-            }
-        
+            },
+]        
     };
 
     if (pillarSelect && criterionSelect) {
@@ -801,7 +801,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     { id: "3.3", title: "Programming and budgeting for LDRRMF" }
                 ]
             },
-        
+   ],     
     };
 
     if (filterPillar && filterCriterion && filterOPR && filterStatus) {
