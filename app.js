@@ -147,7 +147,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 ]
             }
         ],
-    };
+
 
     "Competency": [
             {
@@ -167,7 +167,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     { id: "2.12", title: "Rehabilitation and Recovery" }
                 ]
             }
-        ],
+        ]
+
+        };
 
     if (pillarSelect && criterionSelect) {
         pillarSelect.addEventListener("change", function() {
