@@ -149,15 +149,23 @@ document.addEventListener("DOMContentLoaded", () => {
         ],
 
         "Competency": [
-        {
-            groupName: "A. Capacitated on Disaster Prevention and Mitigation",
-            indicators: [
-                { id: "2.1", title: "Facilitation and Support to Risk Assessment" },
-                { id: "2.2", title: "Maintenance of Local Risk Maps" },
-                { id: "2.3", title: "Operation of multi-hazard end-to-end Early Warning System (EWS)" }
-            ]
-        }
-    ],
+    {
+        groupName: "A. Capacitated on Disaster Prevention and Mitigation",
+        indicators: [
+            { id: "2.1", title: "Facilitation and Support to Risk Assessment" },
+            { id: "2.2", title: "Maintenance of Local Risk Maps" },
+            { id: "2.3", title: "Operation of multi-hazard end-to-end Early Warning System (EWS)" }
+        ]
+    },
+    {
+        groupName: "B. Capacitated on Disaster Preparedness",
+        indicators: [
+            { id: "2.4", title: "DRRM Activities, C/M/BDRRM Plan, LCCAP & Contingency Plans" },
+            { id: "2.5", title: "Monitor and evaluate the implementation of the LDRRMPs" },
+            { id: "2.6", title: "Organization and conduct of training, orientation and knowledge management" }
+        ]
+    }
+],
         
     };
 
@@ -307,8 +315,8 @@ document.addEventListener("DOMContentLoaded", () => {
         // TARGETS
         const PILLAR_1_TARGETS = { "1.1": 4, "1.2": 8, "1.3": 19, "1.4": 4, "1.5": 4, "1.6": 4, "1.7": 4, "1.8": 8, "1.9": 7 };
         const totalPillar1Target = 62;
-        const PILLAR_2_TARGETS = { "2.1": 6, "2.2": 4, "2.3": 2, "2.4": 4, "2.5": 2, "2.6": 4, "2.7": 3, "2.8": 4, "2.9": 6, "2.10": 10, "2.11": 5, "2.12": 6 };
-        const totalPillar2Target = 56;
+        const PILLAR_2_TARGETS = { "2.1": 6, "2.2": 4, "2.3": 2, "2.4": 14, "2.5": 4, "2.6": 5, "2.7": 3, "2.8": 4, "2.9": 6, "2.10": 10, "2.11": 5, "2.12": 6 };
+        const totalPillar2Target = 69;
         const PILLAR_3_TARGETS = { "3.1": 4, "3.2": 2, "3.3": 4 };
         const totalPillar3Target = 10;
         const PILLAR_4_TARGETS = { "4.1": 4 };
@@ -705,15 +713,23 @@ document.addEventListener("DOMContentLoaded", () => {
         ],
 
         "Competency": [
-        {
-            groupName: "A. Capacitated on Disaster Prevention and Mitigation",
-            indicators: [
-                { id: "2.1", title: "Facilitation and Support to Risk Assessment" },
-                { id: "2.2", title: "Maintenance of Local Risk Maps" },
-                { id: "2.3", title: "Operation of multi-hazard end-to-end Early Warning System (EWS)" }
-            ]
-        }
-    ],
+    {
+        groupName: "A. Capacitated on Disaster Prevention and Mitigation",
+        indicators: [
+            { id: "2.1", title: "Facilitation and Support to Risk Assessment" },
+            { id: "2.2", title: "Maintenance of Local Risk Maps" },
+            { id: "2.3", title: "Operation of multi-hazard end-to-end Early Warning System (EWS)" }
+        ]
+    },
+    {
+        groupName: "B. Capacitated on Disaster Preparedness",
+        indicators: [
+            { id: "2.4", title: "DRRM Activities, C/M/BDRRM Plan, LCCAP & Contingency Plans" },
+            { id: "2.5", title: "Monitor and evaluate the implementation of the LDRRMPs" },
+            { id: "2.6", title: "Organization and conduct of training, orientation and knowledge management" }
+        ]
+    }
+],
         
     };
 
