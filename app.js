@@ -295,8 +295,8 @@ document.addEventListener("DOMContentLoaded", () => {
         // TARGETS
         const PILLAR_1_TARGETS = { "1.1": 4, "1.2": 8, "1.3": 19, "1.4": 4, "1.5": 4, "1.6": 4, "1.7": 4, "1.8": 8, "1.9": 7 };
         const totalPillar1Target = 62;
-        const PILLAR_2_TARGETS = { "2.1": 3, "2.2": 3, "2.3": 4, "2.4": 4, "2.5": 2, "2.6": 4, "2.7": 3, "2.8": 4, "2.9": 6, "2.10": 10, "2.11": 5, "2.12": 6 };
-        const totalPillar2Target = 56;
+        const PILLAR_2_TARGETS = { "2.1": 4, "2.2": 3, "2.3": 4, "2.4": 6, "2.5": 2, "2.6": 4, "2.7": 3, "2.8": 4, "2.9": 5, "2.10": 10, "2.11": 5, "2.12": 5 };
+        const totalPillar2Target = 55;
         const PILLAR_3_TARGETS = { "3.1": 4, "3.2": 2, "3.3": 4 };
         const totalPillar3Target = 10;
         const PILLAR_4_TARGETS = { "4.1": 4 };
