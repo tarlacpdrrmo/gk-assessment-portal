@@ -797,4 +797,4 @@ document.addEventListener("DOMContentLoaded", () => {
         const observer = new MutationObserver(applyFilters);
         observer.observe(checklistTableBodyFilter, { childList: true });
     }
-        
+});
