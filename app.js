@@ -149,6 +149,26 @@ document.addEventListener("DOMContentLoaded", () => {
         ]
     };
 
+    "Competency": [
+            {
+                groupName: "Pillar II: Competency Targets",
+                indicators: [
+                    { id: "2.1", title: "Risk Assessment" },
+                    { id: "2.2", title: "Local Risk Maps" },
+                    { id: "2.3", title: "Early Warning System (EWS)" },
+                    { id: "2.4", title: "Formulation of Contingency Plans" },
+                    { id: "2.5", title: "Conduct of Simulation Exercises" },
+                    { id: "2.6", title: "Management of Evacuation Centers" },
+                    { id: "2.7", title: "CBDRRM Training" },
+                    { id: "2.8", title: "Pre-Disaster Risk Assessment (PDRA)" },
+                    { id: "2.9", title: "Incident Command System (ICS)" },
+                    { id: "2.10", title: "Response and SAR Equipment" },
+                    { id: "2.11", title: "Post-Disaster Needs Assessment (PDNA)" },
+                    { id: "2.12", title: "Rehabilitation and Recovery" }
+                ]
+            }
+        ],
+
     if (pillarSelect && criterionSelect) {
         pillarSelect.addEventListener("change", function() {
             const selectedPillar = this.value;
