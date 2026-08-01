@@ -164,6 +164,15 @@ document.addEventListener("DOMContentLoaded", () => {
             { id: "2.5", title: "Monitor and evaluate the implementation of the LDRRMPs" },
             { id: "2.6", title: "Organization and conduct of training, orientation and knowledge management" }
         ]
+    },
+        {
+        groupName: "C. Capacitated on Disaster Response",
+        indicators: [
+            { id: "2.7", title: "Recommend the implementation of forced or pre-emptive evacuation" },
+            { id: "2.8", title: "Pre-positioning" },
+            { id: "2.9", title: "Camp Coordination and Camp Management" },
+            { id: "2.10", title: "Response to and management of adverse effects of emergencies/disasters" }
+        ]
     }
 ],
         
@@ -727,6 +736,15 @@ document.addEventListener("DOMContentLoaded", () => {
             { id: "2.4", title: "DRRM Activities, C/M/BDRRM Plan, LCCAP & Contingency Plans" },
             { id: "2.5", title: "Monitor and evaluate the implementation of the LDRRMPs" },
             { id: "2.6", title: "Organization and conduct of training, orientation and knowledge management" }
+        ]
+    },
+    {
+        groupName: "C. Capacitated on Disaster Response",
+        indicators: [
+            { id: "2.7", title: "Recommend the implementation of forced or pre-emptive evacuation" },
+            { id: "2.8", title: "Pre-positioning" },
+            { id: "2.9", title: "Camp Coordination and Camp Management" },
+            { id: "2.10", title: "Response to and management of adverse effects of emergencies/disasters" }
         ]
     }
 ],
