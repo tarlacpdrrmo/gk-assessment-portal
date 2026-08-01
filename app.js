@@ -319,12 +319,12 @@ document.addEventListener("DOMContentLoaded", () => {
             let requestedItems = []; 
             const TOTAL_CRITERIA = 29; 
             
-            // NEW: Option A Strict Tracker Counter
+            // STRICT TRACKER AND RATING VARIABLES
             let fullyCompletedCriteria = 0;
+            let totalAssessedPoints = 0; // NEW: Tracks your 0-3 points
 
             snapshot.forEach((docSnap) => {
                 const data = docSnap.data();
-                // Only count documents towards math if they are OK or On Hand
                 if (data.status === "OK / Scanned" || data.status === "Hardcopy On Hand") {
                     if (data.pillar === "Structure" && p1Counts[data.criterion] !== undefined) p1Counts[data.criterion]++;
                     if (data.pillar === "Competency" && p2Counts[data.criterion] !== undefined) p2Counts[data.criterion]++;
@@ -350,10 +350,21 @@ document.addEventListener("DOMContentLoaded", () => {
                     let pct = Math.round((uploaded / target) * 100);
                     if (pct > 100) pct = 100;
                     
-                    // STRICT TRACKER MATH: Does it equal exactly 100?
+                    // 1. STRICT TRACKER MATH: Does it equal exactly 100?
                     if (pct === 100) {
                         fullyCompletedCriteria++;
                     }
+
+                    // 2. NEW 0-3 RATING ENGINE
+                    let score = 0;
+                    if (pct === 100) {
+                        score = 3; // Perfect Score
+                    } else if (pct >= 50) {
+                        score = 2; // Partial Compliance
+                    } else if (pct > 0) {
+                        score = 1; // Draft / Initiated
+                    }
+                    totalAssessedPoints += score; // Add to global point tally
 
                     let pctElement = document.getElementById(`pct-${crit.replace('.', '-')}`);
                     if (pctElement) {
@@ -373,7 +384,7 @@ document.addEventListener("DOMContentLoaded", () => {
             processPillarMath(p5Counts, PILLAR_5_TARGETS, "5", totalPillar5Target); 
             processPillarMath(p6Counts, PILLAR_6_TARGETS, "6", totalPillar6Target); 
 
-            // KPIs - Now using fullyCompletedCriteria!
+            // KPIs
             const kpiFraction = document.getElementById("kpiFraction");
             const kpiPending = document.getElementById("kpiPending");
             const kpiReview = document.getElementById("kpiReview");
@@ -389,20 +400,21 @@ document.addEventListener("DOMContentLoaded", () => {
             if (kpiPending) kpiPending.innerText = pendingCount;
             if (kpiReview) kpiReview.innerText = reviewCount;
 
-            // Simple Estimated Score based on strict criteria completion
+            // NEW: ADVANCED 0-3 PROJECTED SCORE
             if (kpiScore && kpiScoreText) {
-                const maxScore = 3.00;
-                const currentScore = ((fullyCompletedCriteria / TOTAL_CRITERIA) * maxScore).toFixed(2);
+                // Calculate average by dividing total points earned by the 29 total indicators
+                const currentScore = (totalAssessedPoints / TOTAL_CRITERIA).toFixed(2);
                 kpiScore.innerText = currentScore;
+                
                 if (currentScore >= 2.50) {
                     kpiScoreText.innerText = "Beyond Compliant (Projected)";
-                    kpiScore.style.color = "#f1c40f"; 
+                    kpiScore.style.color = "#f1c40f"; // Gold
                 } else if (currentScore >= 1.50) {
                     kpiScoreText.innerText = "Fully Compliant (Projected)";
-                    kpiScore.style.color = "#3498db"; 
+                    kpiScore.style.color = "#3498db"; // Blue
                 } else {
                     kpiScoreText.innerText = "Needs Improvement (Projected)";
-                    kpiScore.style.color = "#e74c3c"; 
+                    kpiScore.style.color = "#e74c3c"; // Red
                 }
             }
 
@@ -430,7 +442,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
         });
-    }
 
     // ==========================================
     // MODULE 3: OPR REQUEST TRACKER LOGIC
