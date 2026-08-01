@@ -146,19 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     { id: "1.9", title: "Organization and Competence of local ERTs" }
                 ]
             }
-        ],
-
-        "Competency": [
-        {
-            groupName: "A. Capacitated on Disaster Prevention and Mitigation",
-            indicators: [
-                { id: "2.1", title: "Facilitation and Support to Risk Assessment" },
-                { id: "2.2", title: "Maintenance of Local Risk Maps" },
-                { id: "2.3", title: "Operation of multi-hazard end-to-end Early Warning System (EWS)" }
-            ]
-        }
-    ]
-        
+        ]
     };
 
     if (pillarSelect && criterionSelect) {
@@ -663,6 +651,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
     }
+});
 
 // ==========================================
     // MODULE 6: TABLE FILTERING ENGINE (FIXED)
@@ -701,19 +690,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     { id: "1.9", title: "Organization and Competence of local ERTs" }
                 ]
             }
-        ],
-    
-        "Competency": [
-        {
-            groupName: "A. Capacitated on Disaster Prevention and Mitigation",
-            indicators: [
-                { id: "2.1", title: "Facilitation and Support to Risk Assessment" },
-                { id: "2.2", title: "Maintenance of Local Risk Maps" },
-                { id: "2.3", title: "Operation of multi-hazard end-to-end Early Warning System (EWS)" }
-            ]
-        }
-    ]
-        
+        ]
     };
 
     if (filterPillar && filterCriterion && filterOPR && filterStatus) {
@@ -782,7 +759,7 @@ document.addEventListener("DOMContentLoaded", () => {
         filterOPR.addEventListener("change", applyFilters);
         filterStatus.addEventListener("change", applyFilters);
 
-       // 5. Reset Button
+        // 5. Reset Button
         if (resetFiltersBtn) {
             resetFiltersBtn.addEventListener("click", () => {
                 filterPillar.value = "All";
@@ -797,5 +774,3 @@ document.addEventListener("DOMContentLoaded", () => {
         const observer = new MutationObserver(applyFilters);
         observer.observe(checklistTableBodyFilter, { childList: true });
     }
-
-});
