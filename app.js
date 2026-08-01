@@ -146,45 +146,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     { id: "1.9", title: "Organization and Competence of local ERTs" }
                 ]
             }
-        ],
-
-
-  "Competency": [
-            {
-                groupName: "A. Capacitated on Disaster Prevention and Mitigation",
-                indicators: [
-                    { id: "2.1", title: "Risk Assessment" },
-                    { id: "2.2", title: "Maintenance of Local Risk Maps" },
-                    { id: "2.3", title: "Operation of multi-hazard EWS" }
-                ]
-            },
-            {
-                groupName: "B. Capacitated on Disaster Preparedness",
-                indicators: [
-                    { id: "2.4", title: "DRRM Activities, C/M/BDRRM & LCCAP" },
-                    { id: "2.5", title: "Monitor and evaluate LDRRMPs" },
-                    { id: "2.6", title: "Organization and conduct of training" }
-                ]
-            },
-            {
-                groupName: "C. Capacitated on Disaster Response",
-                indicators: [
-                    { id: "2.7", title: "Implementation of forced/pre-emptive evacuation" },
-                    { id: "2.8", title: "Pre-positioning" },
-                    { id: "2.9", title: "Camp Coordination and Camp Management" },
-                    { id: "2.10", title: "Response and management of emergencies" }
-                ]
-            },
-            {
-                groupName: "D. Capacitated on Disaster Rehabilitation & Recovery",
-                indicators: [
-                    { id: "2.11", title: "Facilitation of early recovery interventions" },
-                    { id: "2.12", title: "Formulation of Rehab and Recovery Program" }
-                ]
-            }
         ]
-
-        };
+    };
 
     if (pillarSelect && criterionSelect) {
         pillarSelect.addEventListener("change", function() {
@@ -305,7 +268,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-   // ==========================================
+    // ==========================================
     // MODULE 2: UNIFIED DASHBOARD LOGIC (STRICT OPTION A)
     // ==========================================
     const kpiCompletion = document.getElementById("kpiCompletion"); 
@@ -329,11 +292,11 @@ document.addEventListener("DOMContentLoaded", () => {
         setupAccordion('header-pillar-5', 'content-pillar-5'); 
         setupAccordion('header-pillar-6', 'content-pillar-6'); 
 
-        // TARGETS
+        // TARGETS (Updated based on Lead Admin Data Dictionary)
         const PILLAR_1_TARGETS = { "1.1": 4, "1.2": 8, "1.3": 19, "1.4": 4, "1.5": 4, "1.6": 4, "1.7": 4, "1.8": 8, "1.9": 7 };
         const totalPillar1Target = 62;
-        const PILLAR_2_TARGETS = { "2.1": 4, "2.2": 3, "2.3": 4, "2.4": 6, "2.5": 2, "2.6": 4, "2.7": 3, "2.8": 4, "2.9": 5, "2.10": 10, "2.11": 5, "2.12": 5 };
-        const totalPillar2Target = 55;
+        const PILLAR_2_TARGETS = { "2.1": 6, "2.2": 4, "2.3": 2, "2.4": 4, "2.5": 2, "2.6": 4, "2.7": 3, "2.8": 4, "2.9": 6, "2.10": 10, "2.11": 5, "2.12": 6 };
+        const totalPillar2Target = 56;
         const PILLAR_3_TARGETS = { "3.1": 4, "3.2": 2, "3.3": 4 };
         const totalPillar3Target = 10;
         const PILLAR_4_TARGETS = { "4.1": 4 };
@@ -358,7 +321,7 @@ document.addEventListener("DOMContentLoaded", () => {
             
             // STRICT TRACKER AND RATING VARIABLES
             let fullyCompletedCriteria = 0;
-            let totalAssessedPoints = 0; // Tracks your 0-3 points
+            let totalAssessedPoints = 0; // NEW: Tracks your 0-3 points
 
             snapshot.forEach((docSnap) => {
                 const data = docSnap.data();
@@ -387,21 +350,21 @@ document.addEventListener("DOMContentLoaded", () => {
                     let pct = Math.round((uploaded / target) * 100);
                     if (pct > 100) pct = 100;
                     
-                    // 1. STRICT TRACKER MATH
+                    // 1. STRICT TRACKER MATH: Does it equal exactly 100?
                     if (pct === 100) {
                         fullyCompletedCriteria++;
                     }
 
-                    // 2. 0-3 RATING ENGINE
+                    // 2. NEW 0-3 RATING ENGINE
                     let score = 0;
                     if (pct === 100) {
-                        score = 3; 
+                        score = 3; // Perfect Score
                     } else if (pct >= 50) {
-                        score = 2; 
+                        score = 2; // Partial Compliance
                     } else if (pct > 0) {
-                        score = 1; 
+                        score = 1; // Draft / Initiated
                     }
-                    totalAssessedPoints += score; 
+                    totalAssessedPoints += score; // Add to global point tally
 
                     let pctElement = document.getElementById(`pct-${crit.replace('.', '-')}`);
                     if (pctElement) {
@@ -437,20 +400,21 @@ document.addEventListener("DOMContentLoaded", () => {
             if (kpiPending) kpiPending.innerText = pendingCount;
             if (kpiReview) kpiReview.innerText = reviewCount;
 
-            // ADVANCED 0-3 PROJECTED SCORE
+            // NEW: ADVANCED 0-3 PROJECTED SCORE
             if (kpiScore && kpiScoreText) {
+                // Calculate average by dividing total points earned by the 29 total indicators
                 const currentScore = (totalAssessedPoints / TOTAL_CRITERIA).toFixed(2);
                 kpiScore.innerText = currentScore;
                 
                 if (currentScore >= 2.50) {
                     kpiScoreText.innerText = "Beyond Compliant (Projected)";
-                    kpiScore.style.color = "#f1c40f"; 
+                    kpiScore.style.color = "#f1c40f"; // Gold
                 } else if (currentScore >= 1.50) {
                     kpiScoreText.innerText = "Fully Compliant (Projected)";
-                    kpiScore.style.color = "#3498db"; 
+                    kpiScore.style.color = "#3498db"; // Blue
                 } else {
                     kpiScoreText.innerText = "Needs Improvement (Projected)";
-                    kpiScore.style.color = "#e74c3c"; 
+                    kpiScore.style.color = "#e74c3c"; // Red
                 }
             }
 
@@ -478,7 +442,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
         });
-    }
 
     // ==========================================
     // MODULE 3: OPR REQUEST TRACKER LOGIC
