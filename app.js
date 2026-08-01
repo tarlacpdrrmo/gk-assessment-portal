@@ -221,6 +221,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 ]
             }
 ],
+        "Partnership and Participation": [
+            {
+                groupName: "Partnership and Participation",
+                indicators: [
+                    { id: "6.1", title: "Develop, strengthen and operationalize mechanisms for partnership" },
+                    { id: "6.2", title: "Participation on other external activities set by higher DRRM Councils" }
+                ]
+            }
+        ]
         
     };
 
@@ -838,6 +847,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 ]
             }
      ],
+        "Partnership and Participation": [
+            {
+                groupName: "Partnership and Participation",
+                indicators: [
+                    { id: "6.1", title: "Develop, strengthen and operationalize mechanisms for partnership" },
+                    { id: "6.2", title: "Participation on other external activities set by higher DRRM Councils" }
+                ]
+            }
+        ]
         
     };
 
