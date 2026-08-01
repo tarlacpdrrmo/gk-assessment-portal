@@ -663,7 +663,6 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
     }
-});
 
 // ==========================================
     // MODULE 6: TABLE FILTERING ENGINE (FIXED)
@@ -798,3 +797,4 @@ document.addEventListener("DOMContentLoaded", () => {
         const observer = new MutationObserver(applyFilters);
         observer.observe(checklistTableBodyFilter, { childList: true });
     }
+});
