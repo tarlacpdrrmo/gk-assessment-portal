@@ -182,6 +182,26 @@ document.addEventListener("DOMContentLoaded", () => {
         ]
     }
 ],
+
+    "Management Systems": [
+            {
+                groupName: "A. Established Standard Operating Procedures",
+                indicators: [
+                    { id: "3.1", title: "Hazard-specific SOPs" }
+                ]
+            },
+            {
+                groupName: "B. Mainstreaming of DRRM and CCA in Local Development Plans",
+                indicators: [
+                    { id: "3.2", title: "Ensure the integration of risk reduction and climate change adaptation" }
+                ]
+            },
+            {
+                groupName: "C. Local DRRM Funding Utilization",
+                indicators: [
+                    { id: "3.3", title: "Programming and budgeting for LDRRMF" }
+                ]
+            }
         
     };
 
@@ -333,8 +353,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const totalPillar1Target = 62;
         const PILLAR_2_TARGETS = { "2.1": 6, "2.2": 4, "2.3": 2, "2.4": 14, "2.5": 3, "2.6": 4, "2.7": 3, "2.8": 4, "2.9": 6, "2.10": 10, "2.11": 5, "2.12": 10 };
         const totalPillar2Target = 71;
-        const PILLAR_3_TARGETS = { "3.1": 4, "3.2": 2, "3.3": 4 };
-        const totalPillar3Target = 10;
+        const PILLAR_3_TARGETS = { "3.1": 7, "3.2": 3, "3.3": 5 };
+        const totalPillar3Target = 15;
         const PILLAR_4_TARGETS = { "4.1": 4 };
         const totalPillar4Target = 4;
         const PILLAR_5_TARGETS = { "5.1": 4, "5.2": 4 };
@@ -762,6 +782,25 @@ document.addEventListener("DOMContentLoaded", () => {
         ]
     }
 ],
+        "Management Systems": [
+            {
+                groupName: "A. Established Standard Operating Procedures",
+                indicators: [
+                    { id: "3.1", title: "Hazard-specific SOPs" }
+                ]
+            },
+            {
+                groupName: "B. Mainstreaming of DRRM and CCA in Local Development Plans",
+                indicators: [
+                    { id: "3.2", title: "Ensure the integration of risk reduction and climate change adaptation" }
+                ]
+            },
+            {
+                groupName: "C. Local DRRM Funding Utilization",
+                indicators: [
+                    { id: "3.3", title: "Programming and budgeting for LDRRMF" }
+                ]
+            },
         
     };
 
