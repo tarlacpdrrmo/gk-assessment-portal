@@ -211,6 +211,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 ]
             }
 ],
+
+        "Knowledge Management and Advocacy": [
+            {
+                groupName: "Knowledge Management and Advocacy",
+                indicators: [
+                    { id: "5.1", title: "Local Disaster Database Resource" },
+                    { id: "5.2", title: "Conducted information dissemination and public awareness" }
+                ]
+            }
+],
         
     };
 
@@ -366,8 +376,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const totalPillar3Target = 15;
         const PILLAR_4_TARGETS = { "4.1": 4 };
         const totalPillar4Target = 4;
-        const PILLAR_5_TARGETS = { "5.1": 4, "5.2": 4 };
-        const totalPillar5Target = 8;
+        const PILLAR_5_TARGETS = { "5.1": 5, "5.2": 5 };
+        const totalPillar5Target = 10;
         const PILLAR_6_TARGETS = { "6.1": 6, "6.2": 4 };
         const totalPillar6Target = 10;
 
@@ -819,6 +829,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 ]
             }
     ],
+        "Knowledge Management and Advocacy": [
+            {
+                groupName: "Knowledge Management and Advocacy",
+                indicators: [
+                    { id: "5.1", title: "Local Disaster Database Resource" },
+                    { id: "5.2", title: "Conducted information dissemination and public awareness" }
+                ]
+            }
+     ],
         
     };
 
