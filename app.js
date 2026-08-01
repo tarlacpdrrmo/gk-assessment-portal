@@ -173,6 +173,13 @@ document.addEventListener("DOMContentLoaded", () => {
             { id: "2.9", title: "Camp Coordination and Camp Management" },
             { id: "2.10", title: "Response to and management of adverse effects of emergencies/disasters" }
         ]
+    },
+        {
+        groupName: "D. Capacitated on Disaster Rehabilitation and Recovery",
+        indicators: [
+            { id: "2.11", title: "Facilitation of early recovery and rehabilitation interventions" },
+            { id: "2.12", title: "Formulation of Rehabilitation and Recovery Program" }
+        ]
     }
 ],
         
@@ -324,8 +331,8 @@ document.addEventListener("DOMContentLoaded", () => {
         // TARGETS
         const PILLAR_1_TARGETS = { "1.1": 4, "1.2": 8, "1.3": 19, "1.4": 4, "1.5": 4, "1.6": 4, "1.7": 4, "1.8": 8, "1.9": 7 };
         const totalPillar1Target = 62;
-        const PILLAR_2_TARGETS = { "2.1": 6, "2.2": 4, "2.3": 2, "2.4": 14, "2.5": 4, "2.6": 5, "2.7": 3, "2.8": 4, "2.9": 6, "2.10": 10, "2.11": 5, "2.12": 6 };
-        const totalPillar2Target = 69;
+        const PILLAR_2_TARGETS = { "2.1": 6, "2.2": 4, "2.3": 2, "2.4": 14, "2.5": 3, "2.6": 4, "2.7": 3, "2.8": 4, "2.9": 6, "2.10": 10, "2.11": 5, "2.12": 10 };
+        const totalPillar2Target = 71;
         const PILLAR_3_TARGETS = { "3.1": 4, "3.2": 2, "3.3": 4 };
         const totalPillar3Target = 10;
         const PILLAR_4_TARGETS = { "4.1": 4 };
@@ -745,6 +752,13 @@ document.addEventListener("DOMContentLoaded", () => {
             { id: "2.8", title: "Pre-positioning" },
             { id: "2.9", title: "Camp Coordination and Camp Management" },
             { id: "2.10", title: "Response to and management of adverse effects of emergencies/disasters" }
+        ]
+    },
+    {
+        groupName: "D. Capacitated on Disaster Rehabilitation and Recovery",
+        indicators: [
+            { id: "2.11", title: "Facilitation of early recovery and rehabilitation interventions" },
+            { id: "2.12", title: "Formulation of Rehabilitation and Recovery Program" }
         ]
     }
 ],
