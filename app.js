@@ -147,7 +147,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 ]
             }
         ]
-    };
+    };,
 
     "Competency": [
             {
