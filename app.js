@@ -268,7 +268,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // ==========================================
+   // ==========================================
     // MODULE 2: UNIFIED DASHBOARD LOGIC (STRICT OPTION A)
     // ==========================================
     const kpiCompletion = document.getElementById("kpiCompletion"); 
@@ -292,7 +292,7 @@ document.addEventListener("DOMContentLoaded", () => {
         setupAccordion('header-pillar-5', 'content-pillar-5'); 
         setupAccordion('header-pillar-6', 'content-pillar-6'); 
 
-        // TARGETS (Updated based on Lead Admin Data Dictionary)
+        // TARGETS
         const PILLAR_1_TARGETS = { "1.1": 4, "1.2": 8, "1.3": 19, "1.4": 4, "1.5": 4, "1.6": 4, "1.7": 4, "1.8": 8, "1.9": 7 };
         const totalPillar1Target = 62;
         const PILLAR_2_TARGETS = { "2.1": 6, "2.2": 4, "2.3": 2, "2.4": 4, "2.5": 2, "2.6": 4, "2.7": 3, "2.8": 4, "2.9": 6, "2.10": 10, "2.11": 5, "2.12": 6 };
@@ -321,7 +321,7 @@ document.addEventListener("DOMContentLoaded", () => {
             
             // STRICT TRACKER AND RATING VARIABLES
             let fullyCompletedCriteria = 0;
-            let totalAssessedPoints = 0; // NEW: Tracks your 0-3 points
+            let totalAssessedPoints = 0; // Tracks your 0-3 points
 
             snapshot.forEach((docSnap) => {
                 const data = docSnap.data();
@@ -350,21 +350,21 @@ document.addEventListener("DOMContentLoaded", () => {
                     let pct = Math.round((uploaded / target) * 100);
                     if (pct > 100) pct = 100;
                     
-                    // 1. STRICT TRACKER MATH: Does it equal exactly 100?
+                    // 1. STRICT TRACKER MATH
                     if (pct === 100) {
                         fullyCompletedCriteria++;
                     }
 
-                    // 2. NEW 0-3 RATING ENGINE
+                    // 2. 0-3 RATING ENGINE
                     let score = 0;
                     if (pct === 100) {
-                        score = 3; // Perfect Score
+                        score = 3; 
                     } else if (pct >= 50) {
-                        score = 2; // Partial Compliance
+                        score = 2; 
                     } else if (pct > 0) {
-                        score = 1; // Draft / Initiated
+                        score = 1; 
                     }
-                    totalAssessedPoints += score; // Add to global point tally
+                    totalAssessedPoints += score; 
 
                     let pctElement = document.getElementById(`pct-${crit.replace('.', '-')}`);
                     if (pctElement) {
@@ -400,21 +400,20 @@ document.addEventListener("DOMContentLoaded", () => {
             if (kpiPending) kpiPending.innerText = pendingCount;
             if (kpiReview) kpiReview.innerText = reviewCount;
 
-            // NEW: ADVANCED 0-3 PROJECTED SCORE
+            // ADVANCED 0-3 PROJECTED SCORE
             if (kpiScore && kpiScoreText) {
-                // Calculate average by dividing total points earned by the 29 total indicators
                 const currentScore = (totalAssessedPoints / TOTAL_CRITERIA).toFixed(2);
                 kpiScore.innerText = currentScore;
                 
                 if (currentScore >= 2.50) {
                     kpiScoreText.innerText = "Beyond Compliant (Projected)";
-                    kpiScore.style.color = "#f1c40f"; // Gold
+                    kpiScore.style.color = "#f1c40f"; 
                 } else if (currentScore >= 1.50) {
                     kpiScoreText.innerText = "Fully Compliant (Projected)";
-                    kpiScore.style.color = "#3498db"; // Blue
+                    kpiScore.style.color = "#3498db"; 
                 } else {
                     kpiScoreText.innerText = "Needs Improvement (Projected)";
-                    kpiScore.style.color = "#e74c3c"; // Red
+                    kpiScore.style.color = "#e74c3c"; 
                 }
             }
 
@@ -442,6 +441,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
         });
+    }
 
     // ==========================================
     // MODULE 3: OPR REQUEST TRACKER LOGIC
